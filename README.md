@@ -82,7 +82,7 @@ Cada equipe receberá:
 
 | Documento | Descrição |
 |-----------|-----------|
-| **Contrato** | Contrato firmado entre o Banco BMG e a parte autora |
+| **Contrato** | Contrato firmado entre o Banco UFMG e a parte autora |
 | **Extrato** | Extrato da conta corrente da parte autora com o banco |
 | **Comprovante de crédito** | Documento regulatório junto ao BACEN atestando a legitimidade da operação |
 | **Dossiê** | Verificação de autenticidade das assinaturas e documentos pessoais do contrato |
