@@ -1,0 +1,49 @@
+@import '../../modules/theme/theme.css';
+
+.dashboard-screen__grid {
+  align-items: start;
+}
+
+.dashboard-screen__hero {
+  min-height: 100%;
+}
+
+.dashboard-screen__headline {
+  margin-bottom: 0;
+}
+
+.dashboard-screen__lede {
+  max-width: 64ch;
+}
+
+.dashboard-screen__split {
+  margin-top: 28px;
+}
+
+.dashboard-screen__cost-card {
+  background: rgba(243, 236, 228, 0.72);
+}
+
+.dashboard-screen__cost-copy {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  margin: 14px 0 0;
+}
+
+.dashboard-screen__aside {
+  min-height: 100%;
+}
+
+.dashboard-screen__audit {
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.dashboard-screen__risk {
+  margin-top: 24px;
+}
+
+@media (max-width: 1180px) {
+  .dashboard-screen__grid {
+    grid-template-columns: 1fr;
+  }
+}

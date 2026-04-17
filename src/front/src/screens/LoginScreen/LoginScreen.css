@@ -1,0 +1,75 @@
+@import '../../modules/theme/theme.css';
+
+.login-screen {
+  display: grid;
+  place-items: center;
+  padding: 30px;
+}
+
+.login-screen__shell {
+  width: min(760px, 100%);
+}
+
+.login-screen__hero {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.login-screen__pill {
+  margin-bottom: 14px;
+}
+
+.login-screen__headline {
+  font-size: clamp(2.4rem, 5vw, 4rem);
+}
+
+.login-screen__lede {
+  margin-inline: auto;
+}
+
+.login-screen__card {
+  padding: 34px;
+}
+
+.login-screen__role-block {
+  margin-bottom: 24px;
+}
+
+.login-screen__form {
+  gap: 18px;
+}
+
+.login-screen__label-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 8px;
+}
+
+.login-screen__remember {
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.login-screen__footer {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(91, 67, 52, 0.1);
+  text-align: center;
+}
+
+.login-screen__footer-text {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .login-screen__card {
+    padding: 24px;
+  }
+
+  .login-screen__label-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
