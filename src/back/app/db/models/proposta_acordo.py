@@ -1,7 +1,6 @@
 import uuid
 
-from sqlalchemy import Float, ForeignKey, Numeric
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Float, ForeignKey, Numeric, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -10,9 +9,9 @@ from app.db.base import Base
 class PropostaAcordo(Base):
     __tablename__ = "proposta_acordo"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     analise_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("analise_ia.id", ondelete="CASCADE"), nullable=False, unique=True
+        UUID, ForeignKey("analise_ia.id", ondelete="CASCADE"), nullable=False, unique=True
     )
     valor_sugerido: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
     valor_base_estatistico: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)

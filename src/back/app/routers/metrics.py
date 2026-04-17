@@ -7,14 +7,26 @@ from pydantic import BaseModel
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
 
+class AderenciaAdvogado(BaseModel):
+    advogado_id: str
+    total: int
+    aceitos: int
+    aderencia: float
+
+
+class DriftConfianca(BaseModel):
+    dia: str
+    avg_confidence: float
+
+
 class MetricsResponse(BaseModel):
     total_processos: int
     total_decisoes: int
     aderencia_global: float | None
     economia_total: float | None
     casos_alto_risco: int
-    aderencia_por_advogado: list[dict]
-    drift_confianca: list[dict]
+    aderencia_por_advogado: list[AderenciaAdvogado]
+    drift_confianca: list[DriftConfianca]
 
 
 class RecommendationFeedItem(BaseModel):

@@ -28,13 +28,20 @@ MOCK_USERS: dict[str, dict[str, Any]] = {
 }
 
 
-def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+# Futuro: usar bcrypt real. Para o demo/hackathon, simplificamos para evitar erros de biblioteca no container.
+MOCK_PASSWORDS = {
+    "advogado@banco.com": "advogado123",
+    "banco@banco.com": "banco123",
+}
+
+
+def verify_password(email: str, plain: str) -> bool:
+    return MOCK_PASSWORDS.get(email) == plain
 
 
 def authenticate_user(email: str, password: str) -> dict[str, Any] | None:
     user = MOCK_USERS.get(email)
-    if not user or not verify_password(password, user["hashed_password"]):
+    if not user or not verify_password(email, password):
         return None
     return user
 

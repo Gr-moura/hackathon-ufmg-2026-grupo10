@@ -25,11 +25,11 @@ class TrechoChave(BaseModel):
 
 
 class PropostaAcordoResponse(BaseModel):
-    valor_sugerido: Decimal
-    intervalo_min: Decimal
-    intervalo_max: Decimal
-    custo_estimado_litigar: Decimal
-    economia_esperada: Decimal
+    valor_sugerido: float
+    intervalo_min: float
+    intervalo_max: float
+    custo_estimado_litigar: float
+    economia_esperada: float
     n_casos_similares: int
 
 
@@ -48,5 +48,5 @@ class AnaliseIAResponse(BaseModel):
 
 class DecisaoAdvogadoRequest(BaseModel):
     acao: AcaoAdvogado
-    valor_advogado: Decimal | None = None
+    valor_advogado: float | None = None
     justificativa: str | None = None

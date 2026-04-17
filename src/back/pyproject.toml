@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=70"]
-build-backend = "setuptools.backends.legacy:build"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "enteros-back"
@@ -35,6 +35,10 @@ dev = [
     "ruff==0.6.*",
     "mypy==1.11.*",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "app/tests"]
+asyncio_mode = "auto"
 
 [tool.ruff]
 line-length = 100
