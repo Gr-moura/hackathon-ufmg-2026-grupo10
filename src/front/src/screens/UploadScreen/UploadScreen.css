@@ -1,0 +1,143 @@
+@import '../../modules/theme/theme.css';
+
+.upload-screen__summary {
+  margin-bottom: 24px;
+}
+
+.upload-screen__title {
+  font-size: 2rem;
+}
+
+.upload-screen__subtitle {
+  margin: 8px 0 0;
+}
+
+.upload-screen__progress-card {
+  margin-top: 18px;
+  background: var(--surface-elevated);
+}
+
+.upload-screen__progress-heading {
+  margin-bottom: 10px;
+}
+
+.upload-screen__analyzing-copy {
+  gap: 14px;
+}
+
+.upload-screen__pulse-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: rgba(255, 220, 195, 0.8);
+  color: var(--primary);
+}
+
+.upload-screen__progress-title,
+.upload-screen__progress-subtitle {
+  margin: 0;
+}
+
+.upload-screen__progress-subtitle {
+  margin-top: 6px;
+}
+
+.upload-screen__progress-value {
+  font-size: 2rem;
+  color: var(--primary);
+}
+
+.upload-screen__grid {
+  align-items: stretch;
+}
+
+.upload-screen__drop-zone {
+  min-height: 360px;
+}
+
+.upload-screen__drop-icon {
+  font-size: 2.4rem;
+}
+
+.upload-screen__drop-title {
+  font-size: 1.9rem;
+}
+
+.upload-screen__drop-copy {
+  max-width: 440px;
+  margin: 12px auto 18px;
+}
+
+.upload-screen__subsidiary-zone {
+  min-height: 360px;
+}
+
+.upload-screen__badges-row {
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 18px;
+}
+
+.upload-screen__badge {
+  margin-right: -10px;
+}
+
+.upload-screen__badge--warm {
+  background: rgba(255, 220, 195, 0.96);
+  color: var(--primary);
+}
+
+.upload-screen__badge--cool {
+  background: rgba(199, 231, 255, 0.96);
+  color: var(--secondary);
+}
+
+.upload-screen__evidence-title {
+  font-size: 1.7rem;
+}
+
+.upload-screen__evidence-copy {
+  margin: 10px 0 16px;
+}
+
+.upload-screen__file-tags {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.upload-screen__category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.upload-screen__category-card {
+  padding: 22px;
+  align-items: flex-start;
+}
+
+.upload-screen__category-icon {
+  margin-bottom: 14px;
+}
+
+.upload-screen__category-title {
+  font-size: 1.1rem;
+}
+
+.upload-screen__category-copy {
+  margin: 10px 0 16px;
+  line-height: 1.6;
+}
+
+.upload-screen__recent-meta {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 1180px) {
+  .upload-screen__category-grid {
+    grid-template-columns: 1fr;
+  }
+}
