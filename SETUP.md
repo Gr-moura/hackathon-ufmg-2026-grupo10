@@ -8,8 +8,9 @@
 
 Liste aqui as dependências necessárias para rodar a solução:
 
-- [ ] ...
-- [ ] ...
+
+- [ ] Node.js 18+ para o front end React
+- [ ] npm ou outro gerenciador compatível
 
 ## Variáveis de Ambiente
 
@@ -27,12 +28,16 @@ OPENAI_API_KEY=sua_chave_aqui
 
 ```bash
 # Descreva aqui os passos de instalação
+cd src/front
+npm install
 ```
 
 ## Execução
 
 ```bash
 # Descreva aqui como rodar a solução
+cd src/front
+npm run dev
 ```
 
 ## Dados
@@ -43,6 +48,7 @@ Coloque os arquivos de dados fornecidos na pasta `data/`. Consulte [`data/README
 
 ```
 ├── src/          # código-fonte
+│   └── front/    # front end React da solução
 ├── data/         # dados (não versionados — ver .gitignore)
 ├── docs/         # apresentação e documentação
 ├── .env.example  # variáveis de ambiente necessárias
