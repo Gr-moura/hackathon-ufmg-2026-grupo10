@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader, random_split
 import pandas as pd
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 
 from model import LitigationModel
 from dataset import LitigationDataset
@@ -56,11 +57,20 @@ def train_model(epochs=30, batch_size=64, lr=0.001):
     max_val = dataset.df[dataset.target_value_col].max()
     if pd.isna(max_val) or max_val == 0: max_val = 1.0
     
+    # Metrics storage
+    history = {
+        'train_loss': [], 'val_loss': [],
+        'train_acc': [], 'val_acc': []
+    }
+
     # 3. Training Loop
     print(f"Starting training for {epochs} epochs...")
     for epoch in range(epochs):
         model.train()
         train_loss = 0
+        train_correct = 0
+        train_total = 0
+        
         for x, y_class, y_val in train_loader:
             optimizer.zero_grad()
             
@@ -77,21 +87,68 @@ def train_model(epochs=30, batch_size=64, lr=0.001):
             optimizer.step()
             train_loss += loss.item()
             
+            # Accuracy
+            preds = torch.argmax(logits, dim=1)
+            train_correct += (preds == y_class).sum().item()
+            train_total += y_class.size(0)
+
+        # Validation step
+        model.eval()
+        val_loss = 0
+        val_correct = 0
+        val_total = 0
+        with torch.no_grad():
+            for vx, vy_class, vy_val in val_loader:
+                v_logits, v_pred_val = model(vx)
+                v_class_loss = torch.nn.functional.cross_entropy(v_logits, vy_class)
+                v_reg_loss = torch.nn.functional.mse_loss(v_pred_val.squeeze(), vy_val)
+                v_loss = 0.5 * v_class_loss + 0.5 * (v_reg_loss / (max_val**2 + 1e-6))
+                val_loss += v_loss.item()
+                
+                v_preds = torch.argmax(v_logits, dim=1)
+                val_correct += (v_preds == vy_class).sum().item()
+                val_total += vy_class.size(0)
+        
+        # Save metrics
+        history['train_loss'].append(train_loss / len(train_loader))
+        history['val_loss'].append(val_loss / len(val_loader))
+        history['train_acc'].append(train_correct / train_total)
+        history['val_acc'].append(val_correct / val_total)
+        
         if (epoch + 1) % 5 == 0 or epoch == 0:
-            # Validation step
-            model.eval()
-            val_loss = 0
-            with torch.no_grad():
-                for vx, vy_class, vy_val in val_loader:
-                    v_logits, v_pred_val = model(vx)
-                    v_class_loss = torch.nn.functional.cross_entropy(v_logits, vy_class)
-                    v_reg_loss = torch.nn.functional.mse_loss(v_pred_val.squeeze(), vy_val)
-                    v_loss = 0.5 * v_class_loss + 0.5 * (v_reg_loss / (max_val**2 + 1e-6))
-                    val_loss += v_loss.item()
+            print(f"Epoch {epoch+1}/{epochs}, Train Loss: {history['train_loss'][-1]:.4f}, Val Loss: {history['val_loss'][-1]:.4f}, Val Acc: {history['val_acc'][-1]:.2%}")
             
-            print(f"Epoch {epoch+1}/{epochs}, Train Loss: {train_loss/len(train_loader):.4f}, Val Loss: {val_loss/len(val_loader):.4f}")
-            
-    # 4. Evaluation & Classification Accuracy (Final Test Set)
+    # 4. Generate & Save Plots
+    graphs_dir = os.path.join(current_dir, "graphs")
+    os.makedirs(graphs_dir, exist_ok=True)
+    
+    # Plot Loss
+    plt.figure(figsize=(10, 5))
+    plt.plot(history['train_loss'], label='Train Loss')
+    plt.plot(history['val_loss'], label='Val Loss')
+    plt.title('Training and Validation Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(os.path.join(graphs_dir, 'loss_curve.png'))
+    plt.close()
+
+    # Plot Accuracy
+    plt.figure(figsize=(10, 5))
+    plt.plot(history['train_acc'], label='Train Accuracy')
+    plt.plot(history['val_acc'], label='Val Accuracy')
+    plt.title('Outcome Classification Accuracy (Win/Loss)')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(os.path.join(graphs_dir, 'accuracy_curve.png'))
+    plt.close()
+    
+    print(f"Performance graphs saved to {graphs_dir}")
+
+    # 5. Evaluation & Classification Accuracy (Final Test Set)
     model.eval()
     print("\nEvaluating outcome classification on TEST set...")
     with torch.no_grad():
@@ -105,10 +162,9 @@ def train_model(epochs=30, batch_size=64, lr=0.001):
             correct_preds += (preds == y_class).sum().item()
             total += y_class.size(0)
             
-    print(f"Classification Accuracy (Win/Loss) on TEST set: {correct_preds/total:.2%}")
+    print(f"Final Classification Accuracy (Win/Loss) on TEST set: {correct_preds/total:.2%}")
     
-    # 5. Save Model
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # 6. Save Model
     root_dir = os.path.abspath(os.path.join(current_dir, "..", "..", "..", ".."))
     models_dir = os.path.join(root_dir, "models")
     os.makedirs(models_dir, exist_ok=True)
