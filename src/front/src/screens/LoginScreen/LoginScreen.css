@@ -3,7 +3,7 @@
 .login-screen {
   display: grid;
   place-items: center;
-  padding: 30px;
+  padding: 16px;
 }
 
 .login-screen__shell {
@@ -12,7 +12,7 @@
 
 .login-screen__hero {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 18px;
 }
 
 .login-screen__pill {
@@ -20,7 +20,7 @@
 }
 
 .login-screen__headline {
-  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-size: clamp(1.9rem, 4vw, 3rem);
 }
 
 .login-screen__lede {
@@ -28,15 +28,15 @@
 }
 
 .login-screen__card {
-  padding: 34px;
+  padding: 22px;
 }
 
 .login-screen__role-block {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .login-screen__form {
-  gap: 18px;
+  gap: 14px;
 }
 
 .login-screen__label-row {
@@ -44,7 +44,7 @@
   justify-content: space-between;
   gap: 12px;
   align-items: end;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .login-screen__remember {
@@ -53,8 +53,8 @@
 }
 
 .login-screen__footer {
-  margin-top: 28px;
-  padding-top: 20px;
+  margin-top: 18px;
+  padding-top: 14px;
   border-top: 1px solid rgba(91, 67, 52, 0.1);
   text-align: center;
 }
@@ -65,7 +65,7 @@
 
 @media (max-width: 760px) {
   .login-screen__card {
-    padding: 24px;
+    padding: 18px;
   }
 
   .login-screen__label-row {

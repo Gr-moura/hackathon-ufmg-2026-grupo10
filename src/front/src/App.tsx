@@ -8,7 +8,6 @@ import { MonitoringScreen } from './screens/MonitoringScreen/MonitoringScreen';
 import './modules/theme/theme.css';
 import { getThemeClassName, type ThemeName } from './modules/theme/palettes';
 import { SideBar } from './modules/ui/SideBar/SideBar';
-import { TopBar } from './modules/ui/TopBar/TopBar';
 
 function App() {
   const [theme, setTheme] = useState<ThemeName>('light');
@@ -23,13 +22,6 @@ function App() {
       <SideBar currentPath={location.pathname} onNavigate={(path) => navigate(path)} />
 
       <div className="content">
-        <TopBar
-          activeLabel={activeLabel}
-          currentPath={location.pathname}
-          theme={theme}
-          onNavigate={(path) => navigate(path)}
-          onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-        />
         {content}
       </div>
     </div>

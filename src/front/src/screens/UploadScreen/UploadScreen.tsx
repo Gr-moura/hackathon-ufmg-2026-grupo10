@@ -33,7 +33,7 @@ export function UploadScreen() {
             <strong className="upload-screen__progress-value">64%</strong>
           </div>
           <div className="progress">
-            <span style={{ width: '64%' }} />
+            <span className="upload-screen__progress-fill" />
           </div>
         </div>
       </section>
@@ -46,7 +46,7 @@ export function UploadScreen() {
           <div className="upload-zone upload-screen__drop-zone">
             <div>
               <div className="upload-icon upload-screen__drop-icon">
-                <Icon name="upload_file" style={{ fontSize: '2.4rem' }} />
+                <Icon name="upload_file" className="upload-screen__drop-icon-symbol" />
               </div>
               <h2 className="section-title-strong upload-screen__drop-title">Process Autos</h2>
               <p className="section-text upload-screen__drop-copy">Drop the full lawsuit PDF or historical case files here.</p>
@@ -80,10 +80,10 @@ export function UploadScreen() {
         </section>
       </div>
 
-      <section className="panel panel-inner upload-screen__categories" style={{ marginTop: 24 }}>
+      <section className="panel panel-inner upload-screen__categories">
         <div className="section-heading">
           <h3 className="section-title">Document Categories</h3>
-          <span className="muted" style={{ fontSize: '0.82rem' }}>Bento grid intake</span>
+          <span className="muted upload-screen__section-note">Bento grid intake</span>
         </div>
         <div className="upload-screen__category-grid">
           {uploadCategories.map((category) => (
@@ -101,7 +101,7 @@ export function UploadScreen() {
         </div>
       </section>
 
-      <section className="panel panel-inner upload-screen__recent" style={{ marginTop: 24 }}>
+      <section className="panel panel-inner upload-screen__recent">
         <div className="section-heading">
           <h3 className="section-title">Recently Processed</h3>
           <button type="button" className="ghost-button" onClick={() => navigate('/dashboard')}>

@@ -18,11 +18,11 @@ export function DashboardScreen() {
             Based on cross-referenced dossiers and recent judicial precedents in the UFMG regional circuit, a pre-litigation settlement is advised to minimize financial exposure and administrative overhead.
           </p>
 
-          <div className="split-grid dashboard-screen__split" style={{ marginTop: 28 }}>
+          <div className="split-grid dashboard-screen__split">
             <div className="metric-card">
               <div className="metric-label">Calculated Threshold</div>
-              <h3 className="metric-value" style={{ fontSize: '1.9rem' }}>
-                Suggested Settlement Offer: <span style={{ color: 'var(--primary)' }}>R$ 5.400,00</span>
+              <h3 className="metric-value dashboard-screen__threshold-value">
+                Suggested Settlement Offer: <span className="dashboard-screen__threshold-price">R$ 5.400,00</span>
               </h3>
               <div className="metric-note">
                 <Icon name="trending_down" /> -18% vs Market Average
@@ -30,7 +30,7 @@ export function DashboardScreen() {
             </div>
 
             <div className="metric-card dashboard-screen__cost-card">
-              <div className="section-heading" style={{ marginBottom: 10 }}>
+              <div className="section-heading dashboard-screen__cost-heading">
                 <span className="metric-label">Potential Litigation Cost</span>
                 <strong>R$ 12.800,00</strong>
               </div>
@@ -63,23 +63,23 @@ export function DashboardScreen() {
             ))}
           </div>
 
-          <div className="glass-card dashboard-screen__audit" style={{ marginTop: 18, background: 'rgba(255, 255, 255, 0.62)' }}>
-            <div className="section-heading" style={{ marginBottom: 8 }}>
-              <div className="doc-main" style={{ gap: 10 }}>
-                <Icon name="info" style={{ color: 'var(--primary)' }} />
-                <h4 className="section-title-strong" style={{ fontSize: '0.9rem' }}>Audit Trail</h4>
+          <div className="glass-card dashboard-screen__audit">
+            <div className="section-heading dashboard-screen__audit-heading">
+              <div className="doc-main dashboard-screen__audit-title-row">
+                <Icon name="info" className="dashboard-screen__audit-icon" />
+                <h4 className="section-title-strong dashboard-screen__audit-title">Audit Trail</h4>
               </div>
             </div>
-            <p className="muted" style={{ margin: 0, fontSize: '0.82rem', lineHeight: 1.6 }}>
+            <p className="muted dashboard-screen__audit-copy">
               Last checked: Today at 09:42 AM <br />
-              System integrity: <strong style={{ color: 'var(--success)' }}>OPTIMAL</strong> <br />
+              System integrity: <strong className="dashboard-screen__audit-success">OPTIMAL</strong> <br />
               Data Sources: Sisjur, External API, UFMG Legacy DB.
             </p>
           </div>
         </aside>
       </div>
 
-      <section className="panel panel-inner dashboard-screen__risk" style={{ marginTop: 24 }}>
+      <section className="panel panel-inner dashboard-screen__risk">
         <div className="section-heading">
           <h3 className="section-title">Advanced Risk Indicators</h3>
           <button type="button" className="ghost-button" onClick={() => navigate('/monitoring')}>
@@ -89,9 +89,9 @@ export function DashboardScreen() {
 
         <div className="insight-grid dashboard-screen__rings">
           {riskIndicators.map((indicator) => (
-            <div key={indicator.label} style={{ textAlign: 'center' }}>
+            <div key={indicator.label} className="dashboard-screen__ring-item">
               <div className="ring-wrap">
-                <svg className="ring" viewBox="0 0 132 132" width="132" height="132">
+                <svg className="ring" viewBox="0 0 120 120" width="120" height="120">
                   <circle cx="66" cy="66" r="58" fill="none" stroke="rgba(91, 67, 52, 0.12)" strokeWidth="8" />
                   <circle
                     cx="66"
