@@ -1,13 +1,15 @@
+import { useNavigate } from 'react-router-dom';
 import { roleTabs } from '../../data';
 import { Icon } from '../../modules/ui/Icon';
 import './LoginScreen.css';
 
-export function LoginScreen({ onLaunch }: { onLaunch: () => void }) {
+export function LoginScreen() {
+  const navigate = useNavigate();
+
   return (
     <main className="login-wrap login-screen">
       <div className="login-shell login-screen__shell">
         <div className="login-screen__hero">
-          <div className="pill login-screen__pill">Secure access</div>
           <h1 className="headline login-screen__headline">
             EnterOS <span className="accent">Enterprise Legal Operations</span>
           </h1>
@@ -62,7 +64,7 @@ export function LoginScreen({ onLaunch }: { onLaunch: () => void }) {
               <span className="muted login-screen__remember">Keep me authenticated for 24 hours</span>
             </label>
 
-            <button type="button" className="access-button" onClick={onLaunch}>
+            <button type="button" className="access-button" onClick={() => navigate('/upload')}>
               Access System
             </button>
           </div>

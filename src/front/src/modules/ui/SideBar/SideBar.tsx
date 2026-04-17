@@ -1,12 +1,12 @@
-import { navigationItems, type ViewKey } from '../../../data';
+import { navigationItems } from '../../../data';
 import { Icon } from '../Icon';
 
 export function SideBar({
-  view,
+  currentPath,
   onNavigate,
 }: {
-  view: ViewKey;
-  onNavigate: (nextView: ViewKey) => void;
+  currentPath: string;
+  onNavigate: (nextPath: string) => void;
 }) {
   return (
     <aside className="sidebar">
@@ -23,7 +23,7 @@ export function SideBar({
       <ul className="nav-list">
         {navigationItems.map((item) => (
           <li key={item.label}>
-            <button className={`nav-button ${view === item.view ? 'active' : ''}`} type="button" onClick={() => onNavigate(item.view)}>
+            <button className={`nav-button ${currentPath === item.path ? 'active' : ''}`} type="button" onClick={() => onNavigate(item.path)}>
               <Icon name={item.icon} />
               <span>{item.label}</span>
             </button>
@@ -31,7 +31,7 @@ export function SideBar({
         ))}
       </ul>
 
-      <button className="sidebar-cta" type="button" onClick={() => onNavigate('dashboard')}>
+      <button className="sidebar-cta" type="button" onClick={() => onNavigate('/dashboard')}>
         New Analysis
       </button>
     </aside>

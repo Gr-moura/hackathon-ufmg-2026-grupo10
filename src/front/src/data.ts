@@ -1,18 +1,18 @@
 export type ViewKey = 'login' | 'upload' | 'dashboard' | 'monitoring';
 
-export const views: Array<{ key: ViewKey; label: string; icon: string }> = [
-  { key: 'login', label: 'Login', icon: 'lock' },
-  { key: 'upload', label: 'File Hub', icon: 'upload_file' },
-  { key: 'dashboard', label: 'Decision Lab', icon: 'gavel' },
-  { key: 'monitoring', label: 'Monitoring', icon: 'analytics' },
+export const views: Array<{ key: ViewKey; label: string; icon: string; path: string }> = [
+  { key: 'login', label: 'Login', icon: 'lock', path: '/login' },
+  { key: 'upload', label: 'File Hub', icon: 'upload_file', path: '/upload' },
+  { key: 'dashboard', label: 'Decision Lab', icon: 'gavel', path: '/dashboard' },
+  { key: 'monitoring', label: 'Monitoring', icon: 'analytics', path: '/monitoring' },
 ];
 
 export const navigationItems = [
-  { label: 'Dashboard', icon: 'home', view: 'dashboard' as ViewKey },
-  { label: 'Process Autos', icon: 'description', view: 'upload' as ViewKey },
-  { label: 'Bank Evidence', icon: 'account_balance', view: 'upload' as ViewKey },
-  { label: 'Decision Lab', icon: 'gavel', view: 'dashboard' as ViewKey },
-  { label: 'Adherence', icon: 'analytics', view: 'monitoring' as ViewKey },
+  { label: 'Dashboard', icon: 'home', path: '/dashboard' },
+  { label: 'Process Autos', icon: 'description', path: '/upload' },
+  { label: 'Bank Evidence', icon: 'account_balance', path: '/upload' },
+  { label: 'Decision Lab', icon: 'gavel', path: '/dashboard' },
+  { label: 'Adherence', icon: 'analytics', path: '/monitoring' },
 ];
 
 export const dashboardDocs = [

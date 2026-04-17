@@ -1,8 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import { performanceRows, recommendations, statsCards } from '../../data';
 import { Icon } from '../../modules/ui/Icon';
 import './MonitoringScreen.css';
 
-export function MonitoringScreen({ onOpenDecision }: { onOpenDecision: () => void }) {
+export function MonitoringScreen() {
+  const navigate = useNavigate();
+
   return (
     <main className="screen monitoring-screen">
       <div className="monitor-grid monitoring-screen__grid">
@@ -35,7 +38,7 @@ export function MonitoringScreen({ onOpenDecision }: { onOpenDecision: () => voi
               <h3 className="section-title-strong monitoring-screen__feed-title">AI Recommendations</h3>
               <p className="section-text monitoring-screen__feed-subtitle">Real-time policy alignment feed</p>
             </div>
-            <button type="button" className="ghost-button" onClick={onOpenDecision}>
+            <button type="button" className="ghost-button" onClick={() => navigate('/dashboard')}>
               Open Decision Lab
             </button>
           </div>

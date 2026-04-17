@@ -1,18 +1,18 @@
-import { views, type ViewKey } from '../../../data';
+import { views } from '../../../data';
 import { Icon } from '../Icon';
 import { themeOptions, type ThemeName } from '../../theme/palettes';
 
 export function TopBar({
   activeLabel,
-  currentView,
+  currentPath,
   theme,
   onNavigate,
   onToggleTheme,
 }: {
   activeLabel: string;
-  currentView: ViewKey;
+  currentPath: string;
   theme: ThemeName;
-  onNavigate: (nextView: ViewKey) => void;
+  onNavigate: (nextPath: string) => void;
   onToggleTheme: () => void;
 }) {
   return (
@@ -24,7 +24,7 @@ export function TopBar({
 
       <div className="topbar-actions">
         {views.map((entry) => (
-          <button key={entry.key} type="button" className={`view-switch ${currentView === entry.key ? 'active' : ''}`} onClick={() => onNavigate(entry.key)}>
+          <button key={entry.key} type="button" className={`view-switch ${currentPath === entry.path ? 'active' : ''}`} onClick={() => onNavigate(entry.path)}>
             <Icon name={entry.icon} />
             {entry.label}
           </button>

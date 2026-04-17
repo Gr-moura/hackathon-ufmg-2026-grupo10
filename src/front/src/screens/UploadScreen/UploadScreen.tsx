@@ -1,8 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import { recentFiles, uploadCategories } from '../../data';
 import { Icon } from '../../modules/ui/Icon';
 import './UploadScreen.css';
 
-export function UploadScreen({ onOpenDashboard }: { onOpenDashboard: () => void }) {
+export function UploadScreen() {
+  const navigate = useNavigate();
+
   return (
     <main className="screen upload-screen">
       <section className="panel panel-inner upload-screen__summary">
@@ -11,7 +14,7 @@ export function UploadScreen({ onOpenDashboard }: { onOpenDashboard: () => void 
             <h1 className="section-title-strong upload-screen__title">Evidence Hub</h1>
             <p className="section-text upload-screen__subtitle">Centralize and process legal documentation for automated adherence analysis.</p>
           </div>
-          <button type="button" className="ghost-button" onClick={onOpenDashboard}>
+          <button type="button" className="ghost-button" onClick={() => navigate('/dashboard')}>
             Return to Decision Lab
           </button>
         </div>
@@ -101,7 +104,7 @@ export function UploadScreen({ onOpenDashboard }: { onOpenDashboard: () => void 
       <section className="panel panel-inner upload-screen__recent" style={{ marginTop: 24 }}>
         <div className="section-heading">
           <h3 className="section-title">Recently Processed</h3>
-          <button type="button" className="ghost-button" onClick={onOpenDashboard}>
+          <button type="button" className="ghost-button" onClick={() => navigate('/dashboard')}>
             Compare with decision output
           </button>
         </div>

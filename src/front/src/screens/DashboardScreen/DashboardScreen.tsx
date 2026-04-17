@@ -1,8 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import { dashboardDocs, riskIndicators } from '../../data';
 import { Icon } from '../../modules/ui/Icon';
 import './DashboardScreen.css';
 
-export function DashboardScreen({ onOpenMonitoring }: { onOpenMonitoring: () => void }) {
+export function DashboardScreen() {
+  const navigate = useNavigate();
+
   return (
     <main className="screen dashboard-screen">
       <div className="hero-grid dashboard-screen__grid">
@@ -79,7 +82,7 @@ export function DashboardScreen({ onOpenMonitoring }: { onOpenMonitoring: () => 
       <section className="panel panel-inner dashboard-screen__risk" style={{ marginTop: 24 }}>
         <div className="section-heading">
           <h3 className="section-title">Advanced Risk Indicators</h3>
-          <button type="button" className="ghost-button" onClick={onOpenMonitoring}>
+          <button type="button" className="ghost-button" onClick={() => navigate('/monitoring')}>
             Open Monitoring
           </button>
         </div>
