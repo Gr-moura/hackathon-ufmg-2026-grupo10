@@ -1,11 +1,8 @@
-"""Router de métricas — implementação sob responsabilidade do Dev 2.
-
-Stubs com contratos corretos para desbloquear o Dev 3 (MonitoringScreen).
-"""
-from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel
+from fastapi import APIRouter
 
 from app.deps import CurrentUser, DbDep
+from app.services.metrics.aggregator import get_global_metrics, get_recommendations_feed
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
@@ -31,11 +28,9 @@ class RecommendationFeedItem(BaseModel):
 
 @router.get("/metrics", response_model=MetricsResponse)
 def get_metrics(db: DbDep, current_user: CurrentUser) -> MetricsResponse:
-    # TODO(DEV-2): implementar agregações via services/metrics/aggregator.py
-    raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Métricas em desenvolvimento")
+    return MetricsResponse(**get_global_metrics(db))
 
 
 @router.get("/recommendations", response_model=list[RecommendationFeedItem])
 def get_recommendations(db: DbDep, current_user: CurrentUser) -> list[RecommendationFeedItem]:
-    # TODO(DEV-2): listar recomendações recentes para o feed do Monitoring
-    raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Métricas em desenvolvimento")
+    return [RecommendationFeedItem(**r) for r in get_recommendations_feed(db)]

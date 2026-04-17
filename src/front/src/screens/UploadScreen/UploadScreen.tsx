@@ -1,10 +1,65 @@
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { recentFiles, uploadCategories } from '../../data';
+import { useUploadProcesso, useAnalyzeProcesso } from '../../api/processes';
 import { Icon } from '../../modules/ui/Icon';
 import './UploadScreen.css';
 
 export function UploadScreen() {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [numeroProcesso, setNumeroProcesso] = useState('');
+  const [valorCausa, setValorCausa] = useState('');
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const upload = useUploadProcesso();
+  const analyze = useAnalyzeProcesso();
+
+  function handleFileDrop(e: React.DragEvent) {
+    e.preventDefault();
+    const dropped = Array.from(e.dataTransfer.files).filter((f) => f.type === 'application/pdf');
+    setFiles((prev) => [...prev, ...dropped]);
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files) setFiles((prev) => [...prev, ...Array.from(e.target.files!)]);
+  }
+
+  function removeFile(index: number) {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  async function handleSubmit() {
+    if (!numeroProcesso.trim()) { setError('Informe o número do processo.'); return; }
+    if (files.length === 0) { setError('Adicione ao menos um documento PDF.'); return; }
+    setError(null);
+    setUploadProgress(30);
+
+    try {
+      const processo = await upload.mutateAsync({
+        numeroProcesso: numeroProcesso.trim(),
+        valorCausa: valorCausa ? parseFloat(valorCausa) : undefined,
+        files,
+      });
+      setUploadProgress(60);
+
+      // Dispara a análise IA (DEV-2 implementa o pipeline; enquanto isso navega direto)
+      try {
+        await analyze.mutateAsync(processo.id);
+      } catch {
+        // Pipeline ainda em desenvolvimento — navega mesmo assim
+      }
+
+      setUploadProgress(100);
+      setTimeout(() => navigate(`/dashboard/${processo.id}`), 400);
+    } catch {
+      setError('Falha ao enviar os documentos. Verifique a conexão e tente novamente.');
+      setUploadProgress(null);
+    }
+  }
+
+  const isLoading = upload.isPending || analyze.isPending;
 
   return (
     <main className="screen upload-screen">
@@ -19,38 +74,73 @@ export function UploadScreen() {
           </button>
         </div>
 
-        <div className="metric-card upload-screen__progress-card">
-          <div className="section-heading upload-screen__progress-heading">
-            <div className="doc-main upload-screen__analyzing-copy">
-              <div className="mini-icon upload-screen__pulse-icon">
-                <Icon name="auto_awesome" />
-              </div>
-              <div>
-                <h3 className="section-title-strong upload-screen__progress-title">AI Analyzing Evidence...</h3>
-                <p className="section-text upload-screen__progress-subtitle">Cross-referencing lawsuit 2024.089.12 with internal bank policies.</p>
+        <div className="metric-card" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div>
+              <label className="field-label" style={{ display: 'block', marginBottom: 4 }}>Process Number *</label>
+              <div className="input-row">
+                <Icon name="tag" className="icon-prefix" />
+                <input
+                  className="text-input" type="text"
+                  placeholder="0801234-56-2024-8-10-0001"
+                  value={numeroProcesso}
+                  onChange={(e) => setNumeroProcesso(e.target.value)}
+                />
               </div>
             </div>
-            <strong className="upload-screen__progress-value">64%</strong>
+            <div>
+              <label className="field-label" style={{ display: 'block', marginBottom: 4 }}>Valor da Causa (R$)</label>
+              <div className="input-row">
+                <Icon name="payments" className="icon-prefix" />
+                <input
+                  className="text-input" type="number" placeholder="15000"
+                  value={valorCausa} onChange={(e) => setValorCausa(e.target.value)}
+                />
+              </div>
+            </div>
           </div>
-          <div className="progress">
-            <span style={{ width: '64%' }} />
-          </div>
+
+          {uploadProgress !== null && (
+            <div>
+              <div className="section-heading upload-screen__progress-heading">
+                <div className="doc-main upload-screen__analyzing-copy">
+                  <div className="mini-icon upload-screen__pulse-icon"><Icon name="auto_awesome" /></div>
+                  <div>
+                    <h3 className="section-title-strong upload-screen__progress-title">
+                      {uploadProgress < 100 ? 'Processing Evidence…' : 'Done — opening Decision Lab'}
+                    </h3>
+                    <p className="section-text upload-screen__progress-subtitle">
+                      {uploadProgress < 60 ? 'Uploading documents…' : uploadProgress < 100 ? 'Triggering AI analysis…' : 'Redirecting…'}
+                    </p>
+                  </div>
+                </div>
+                <strong className="upload-screen__progress-value">{uploadProgress}%</strong>
+              </div>
+              <div className="progress"><span style={{ width: `${uploadProgress}%`, transition: 'width 0.4s ease' }} /></div>
+            </div>
+          )}
         </div>
       </section>
 
       <div className="upload-grid upload-screen__grid">
-        <section className="panel panel-inner upload-screen__drop-column">
+        <section
+          className="panel panel-inner upload-screen__drop-column"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleFileDrop}
+        >
           <div className="section-heading">
-            <span className="section-title">Destination: Legal Folder</span>
+            <span className="section-title">Autos & Subsídios</span>
+            <span className="muted" style={{ fontSize: '0.82rem' }}>{files.length} file(s)</span>
           </div>
           <div className="upload-zone upload-screen__drop-zone">
             <div>
               <div className="upload-icon upload-screen__drop-icon">
                 <Icon name="upload_file" style={{ fontSize: '2.4rem' }} />
               </div>
-              <h2 className="section-title-strong upload-screen__drop-title">Process Autos</h2>
-              <p className="section-text upload-screen__drop-copy">Drop the full lawsuit PDF or historical case files here.</p>
-              <button className="primary-button" type="button">
+              <h2 className="section-title-strong upload-screen__drop-title">Drop PDFs here</h2>
+              <p className="section-text upload-screen__drop-copy">Petição inicial, procuração, contrato, extrato, dossiê…</p>
+              <input ref={fileInputRef} type="file" accept=".pdf" multiple hidden onChange={handleFileChange} />
+              <button className="primary-button" type="button" onClick={() => fileInputRef.current?.click()}>
                 Browse Files
               </button>
             </div>
@@ -58,73 +148,38 @@ export function UploadScreen() {
         </section>
 
         <section className="panel panel-inner upload-screen__evidence-column">
-          <div className="section-heading">
-            <span className="section-title">Internal Subsídios</span>
-          </div>
-          <div className="upload-zone dashed upload-screen__subsidiary-zone">
-            <div>
-              <div className="doc-main upload-screen__badges-row">
-                <div className="avatar upload-screen__badge"> <Icon name="contract" /> </div>
-                <div className="avatar upload-screen__badge upload-screen__badge--warm"><Icon name="receipt_long" /></div>
-                <div className="avatar upload-screen__badge upload-screen__badge--cool"><Icon name="payments" /></div>
-              </div>
-              <h2 className="section-title-strong upload-screen__evidence-title">Bank Evidence</h2>
-              <p className="section-text upload-screen__evidence-copy">Upload internal proofs & subsidies.</p>
-              <div className="upload-screen__file-tags">
-                <span className="mini-pill">PDF</span>
-                <span className="mini-pill">XLSX</span>
-                <span className="mini-pill">PNG</span>
-              </div>
+          <div className="section-heading"><span className="section-title">Selected Documents</span></div>
+          {files.length === 0 ? (
+            <p className="muted" style={{ padding: '1rem 0' }}>No files selected yet.</p>
+          ) : (
+            <div className="activity-list">
+              {files.map((f, i) => (
+                <div key={i} className="activity-item upload-screen__recent-item">
+                  <div className="activity-main">
+                    <div className="doc-icon"><Icon name="picture_as_pdf" /></div>
+                    <div>
+                      <strong style={{ fontSize: '0.85rem' }}>{f.name}</strong>
+                      <p className="muted upload-screen__recent-meta">{(f.size / 1024).toFixed(0)} KB</p>
+                    </div>
+                  </div>
+                  <button type="button" className="icon-button" onClick={() => removeFile(i)}>
+                    <Icon name="close" />
+                  </button>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
+
+          {error && <p style={{ color: 'var(--danger)', fontSize: '0.85rem', marginTop: 8 }}>{error}</p>}
+
+          <button
+            type="button" className="primary-button" style={{ marginTop: 16, width: '100%' }}
+            onClick={handleSubmit} disabled={isLoading || uploadProgress !== null}
+          >
+            {isLoading ? 'Sending…' : 'Upload & Analyze'}
+          </button>
         </section>
       </div>
-
-      <section className="panel panel-inner upload-screen__categories" style={{ marginTop: 24 }}>
-        <div className="section-heading">
-          <h3 className="section-title">Document Categories</h3>
-          <span className="muted" style={{ fontSize: '0.82rem' }}>Bento grid intake</span>
-        </div>
-        <div className="upload-screen__category-grid">
-          {uploadCategories.map((category) => (
-            <article key={category.title} className="category-card upload-screen__category-card">
-              <div>
-                <div className="doc-icon upload-screen__category-icon">
-                  <Icon name={category.icon} />
-                </div>
-                <h4 className="section-title-strong upload-screen__category-title">{category.title}</h4>
-                <p className="card-text upload-screen__category-copy">{category.description}</p>
-              </div>
-              <span className="tag success">{category.tag}</span>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="panel panel-inner upload-screen__recent" style={{ marginTop: 24 }}>
-        <div className="section-heading">
-          <h3 className="section-title">Recently Processed</h3>
-          <button type="button" className="ghost-button" onClick={() => navigate('/dashboard')}>
-            Compare with decision output
-          </button>
-        </div>
-        <div className="activity-list">
-          {recentFiles.map((file) => (
-            <div key={file.name} className="activity-item upload-screen__recent-item">
-              <div className="activity-main">
-                <div className="doc-icon">
-                  <Icon name="picture_as_pdf" />
-                </div>
-                <div>
-                  <strong>{file.name}</strong>
-                  <p className="muted upload-screen__recent-meta">{file.time} • {file.size}</p>
-                </div>
-              </div>
-              <span className={`status-pill ${file.tone === 'danger' ? 'danger' : 'success'}`}>{file.status}</span>
-            </div>
-          ))}
-        </div>
-      </section>
     </main>
   );
 }
