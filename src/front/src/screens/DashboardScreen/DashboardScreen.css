@@ -1,9 +1,5 @@
 @import '../../modules/theme/theme.css';
 
-.dashboard-screen {
-  min-height: 0;
-}
-
 .dashboard-screen__grid {
   align-items: start;
 }
@@ -14,17 +10,14 @@
 
 .dashboard-screen__headline {
   margin-bottom: 0;
-  font-size: clamp(1.8rem, 3vw, 2.7rem);
 }
 
 .dashboard-screen__lede {
   max-width: 64ch;
-  margin-top: 10px;
-  font-size: 0.92rem;
 }
 
 .dashboard-screen__split {
-  margin-top: 12px;
+  margin-top: 28px;
 }
 
 .dashboard-screen__cost-card {
@@ -32,9 +25,9 @@
 }
 
 .dashboard-screen__cost-copy {
-  font-size: 0.76rem;
-  line-height: 1.45;
-  margin: 10px 0 0;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  margin: 14px 0 0;
 }
 
 .dashboard-screen__aside {
@@ -46,50 +39,7 @@
 }
 
 .dashboard-screen__risk {
-  margin-top: 0;
-}
-
-.dashboard-screen__threshold-value {
-  font-size: 1.35rem;
-}
-
-.dashboard-screen__threshold-price {
-  color: var(--primary);
-}
-
-.dashboard-screen__cost-heading,
-.dashboard-screen__audit-heading {
-  margin-bottom: 8px;
-}
-
-.dashboard-screen__audit-title-row {
-  gap: 8px;
-}
-
-.dashboard-screen__audit-icon {
-  color: var(--primary);
-}
-
-.dashboard-screen__audit-title {
-  font-size: 0.92rem;
-}
-
-.dashboard-screen__audit-copy {
-  margin: 0;
-  font-size: 0.78rem;
-  line-height: 1.45;
-}
-
-.dashboard-screen__audit-success {
-  color: var(--success);
-}
-
-.dashboard-screen__ring-item {
-  text-align: center;
-}
-
-.dashboard-screen__rings {
-  gap: 12px;
+  margin-top: 24px;
 }
 
 @media (max-width: 1180px) {

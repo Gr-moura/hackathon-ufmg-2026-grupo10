@@ -101,8 +101,3 @@ export const statsCards = [
   { label: 'Total Savings', value: 'R$ 2.4M', note: 'R$ 240k Saved', icon: 'payments' },
   { label: 'High-Risk Cases', value: '42', note: 'Live Attention', icon: 'warning' },
 ];
-
-export const roleTabs = [
-  { label: 'Lawyer', active: true },
-  { label: 'Bank Administrator', active: false },
-];

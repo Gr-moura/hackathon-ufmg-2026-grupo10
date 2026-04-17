@@ -9,7 +9,7 @@ export function MonitoringScreen() {
   return (
     <main className="screen monitoring-screen">
       <div className="monitor-grid monitoring-screen__grid">
-        <section className="panel panel-inner hero-banner monitoring-screen__hero">
+        <section className="panel panel-inner hero-banner monitoring-screen__hero" >
           <div className="title-kicker monitoring-screen__kicker">Executive Monitoring</div>
           <h1 className="headline monitoring-screen__headline">
             Bank UFMG <span className="accent">Operations</span>
@@ -18,10 +18,10 @@ export function MonitoringScreen() {
             Track adherence, savings, and high-risk cases in one control surface. Use the data to assess whether the agreement policy is working.
           </p>
 
-          <div className="split-grid monitoring-screen__stats">
+          <div className="split-grid monitoring-screen__stats" style={{ marginTop: 28 }}>
             {statsCards.slice(0, 4).map((card, index) => (
               <article key={card.label} className={`metric-card monitoring-screen__stat-card ${index === 3 ? 'monitoring-screen__stat-card--accent' : ''}`}>
-                <div className="section-heading monitoring-screen__stat-heading">
+                <div className="section-heading" style={{ marginBottom: 10 }}>
                   <Icon name={card.icon} className={index === 3 ? 'monitoring-screen__stat-icon monitoring-screen__stat-icon--accent' : 'monitoring-screen__stat-icon'} />
                   <span className={`mini-pill monitoring-screen__note ${index === 3 ? 'monitoring-screen__note--accent' : ''}`}>{card.note}</span>
                 </div>
@@ -63,7 +63,7 @@ export function MonitoringScreen() {
         </aside>
       </div>
 
-      <section className="panel panel-inner monitoring-screen__table-panel">
+      <section className="panel panel-inner monitoring-screen__table-panel" style={{ marginTop: 24 }}>
         <div className="section-heading">
           <h3 className="section-title-strong monitoring-screen__table-title">Lawyer Performance Matrix</h3>
           <button type="button" className="ghost-button">Export Full Report</button>
@@ -86,20 +86,20 @@ export function MonitoringScreen() {
                     <div className="row-head">
                       <div className="avatar">{row.initials}</div>
                       <div>
-                        <div className="monitoring-screen__lawyer-name">{row.name}</div>
-                        <div className="muted monitoring-screen__lawyer-role">{row.role}</div>
+                        <div style={{ fontWeight: 800 }}>{row.name}</div>
+                        <div className="muted" style={{ fontSize: '0.78rem' }}>{row.role}</div>
                       </div>
                     </div>
                   </td>
                   <td>{row.cases}</td>
                   <td>
-                    <div className="row-head monitoring-screen__bar-row">
+                    <div className="row-head" style={{ gap: 10 }}>
                       <div className="bar"><span style={{ width: `${row.adherence}%` }} /></div>
                       <strong>{row.adherence}%</strong>
                     </div>
                   </td>
                   <td>
-                    <span className={row.tone === 'warning' ? 'monitoring-screen__recommended-warning' : 'monitoring-screen__recommended-success'}>{row.recommended}</span> / <strong>{row.actual}</strong>
+                    <span style={{ color: row.tone === 'warning' ? 'var(--warning)' : 'var(--success)' }}>{row.recommended}</span> / <strong>{row.actual}</strong>
                   </td>
                 </tr>
               ))}

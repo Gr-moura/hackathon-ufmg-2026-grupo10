@@ -1,9 +1,5 @@
 @import '../../modules/theme/theme.css';
 
-.monitoring-screen {
-  min-height: 0;
-}
-
 .monitoring-screen__grid {
   align-items: start;
 }
@@ -19,17 +15,14 @@
 
 .monitoring-screen__headline {
   color: #f7f7f7;
-  font-size: clamp(1.8rem, 3vw, 2.7rem);
 }
 
 .monitoring-screen__lede {
   color: rgba(241, 241, 241, 0.72);
-  margin-top: 10px;
-  font-size: 0.92rem;
 }
 
 .monitoring-screen__stats {
-  margin-top: 12px;
+  margin-top: 28px;
 }
 
 .monitoring-screen__stat-card {
@@ -74,11 +67,11 @@
 }
 
 .monitoring-screen__feed-title {
-  font-size: 1.15rem;
+  font-size: 1.4rem;
 }
 
 .monitoring-screen__feed-subtitle {
-  margin: 4px 0 0;
+  margin: 8px 0 0;
 }
 
 .monitoring-screen__feed-item {
@@ -91,16 +84,16 @@
 
 .monitoring-screen__case-title {
   font-size: 1rem;
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
 .monitoring-screen__feed-copy {
-  margin: 6px 0 0;
-  line-height: 1.45;
+  margin: 8px 0 0;
+  line-height: 1.6;
 }
 
 .monitoring-screen__meta {
-  min-width: 96px;
+  min-width: 110px;
   text-align: right;
 }
 
@@ -110,35 +103,11 @@
 }
 
 .monitoring-screen__table-panel {
-  margin-top: 0;
+  margin-top: 24px;
 }
 
 .monitoring-screen__table-title {
-  font-size: 1.15rem;
-}
-
-.monitoring-screen__stat-heading {
-  margin-bottom: 8px;
-}
-
-.monitoring-screen__lawyer-name {
-  font-weight: 800;
-}
-
-.monitoring-screen__lawyer-role {
-  font-size: 0.74rem;
-}
-
-.monitoring-screen__bar-row {
-  gap: 8px;
-}
-
-.monitoring-screen__recommended-warning {
-  color: var(--warning);
-}
-
-.monitoring-screen__recommended-success {
-  color: var(--success);
+  font-size: 1.4rem;
 }
 
 @media (max-width: 1180px) {
