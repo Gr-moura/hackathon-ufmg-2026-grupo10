@@ -23,7 +23,8 @@ export function LoginScreen() {
     try {
       const data = await login.mutateAsync({ email: email || emailForRole, password: password || (role === 'Lawyer' ? 'advogado123' : 'banco123') });
       saveToken(data.access_token);
-      navigate('/upload');
+      window.localStorage.setItem('enteros-role', role);
+      navigate(role === 'Bank Administrator' ? '/monitoring' : '/home');
     } catch {
       setError('Email ou senha inválidos.');
     }

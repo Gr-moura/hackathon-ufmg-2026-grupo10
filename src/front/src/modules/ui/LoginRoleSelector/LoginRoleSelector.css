@@ -1,0 +1,26 @@
+@import '../../theme/theme.css';
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 18px;
+  background: var(--active_button_bg);
+}
+
+.tab {
+  flex: 1;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: var(--surface-strong);
+  color: var(--primary);
+  box-shadow: 0 8px 18px rgba(60, 28, 0, 0.08);
+}

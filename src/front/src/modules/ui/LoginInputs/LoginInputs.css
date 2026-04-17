@@ -1,0 +1,38 @@
+@import '../../theme/theme.css';
+
+.input-row {
+  position: relative;
+}
+
+.icon-prefix,
+.icon-suffix {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(112, 92, 73, 0.72);
+}
+
+.icon-prefix {
+  left: 14px;
+}
+
+.icon-suffix {
+  right: 12px;
+  border-radius: 10px;
+}
+
+.text-input {
+  width: 100%;
+  padding: 15px 16px 15px 42px;
+  border: 1px solid rgba(91, 67, 52, 0.12);
+  border-radius: 16px;
+  background: var(--active_button_bg);
+  outline: none;
+  color: var(--text);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.text-input:focus {
+  border-color: rgba(255, 140, 0, 0.5);
+  box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.12);
+}
