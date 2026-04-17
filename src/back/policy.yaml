@@ -1,0 +1,21 @@
+version: "1.0"
+last_reviewed_by: "time juridico"
+
+confidence_thresholds:
+  green: 0.85
+  yellow: 0.60
+
+settlement_bounds:
+  piso_pct_valor_causa: 0.30
+  teto_pct_valor_causa: 0.70
+  piso_absoluto_brl: 1500.00
+  teto_absoluto_brl: 50000.00
+
+documental_completeness_penalty:
+  contrato_ausente: -0.20
+  comprovante_credito_ausente: -0.15
+  dossie_ausente: -0.05
+
+red_flags_forcing_defense:
+  - "assinatura_evidentemente_falsificada_no_dossie"
+  - "ausencia_total_de_comprovante_de_credito"

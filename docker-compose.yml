@@ -1,0 +1,41 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: enteros
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-enteros_dev}
+      POSTGRES_DB: enteros
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U enteros"]
+      interval: 5s
+      retries: 10
+
+  back:
+    build: ./src/back
+    env_file: .env
+    depends_on:
+      db: { condition: service_healthy }
+    ports: ["8000:8000"]
+    volumes:
+      - ./src/back:/app
+      - ./data:/data:ro
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  front:
+    build: ./src/front
+    depends_on: [back]
+    ports: ["5173:5173"]
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+    volumes:
+      - ./src/front:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0
+
+volumes:
+  pgdata:
