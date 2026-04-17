@@ -1,5 +1,32 @@
 @import '../../modules/theme/theme.css';
 
+.upload-zone {
+  min-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 34px;
+  border-radius: 20px;
+  border: 1px solid rgba(91, 67, 52, 0.1);
+  background: var(--surface-elevated);
+}
+
+.upload-zone.dashed {
+  border-style: dashed;
+}
+
+.upload-icon {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.18), rgba(255, 220, 195, 0.9));
+  color: var(--primary);
+  margin: 0 auto 16px;
+}
+
 .upload-screen__summary {
   margin-bottom: 24px;
 }
@@ -79,6 +106,16 @@
 }
 
 .upload-screen__badge {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: rgba(27, 27, 27, 0.92);
+  color: #d2d2d2;
+  font-size: 0.72rem;
+  font-weight: 900;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   margin-right: -10px;
 }
 

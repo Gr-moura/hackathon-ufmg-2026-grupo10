@@ -1,11 +1,15 @@
 import { useState } from 'react';
+import './LoginRoleSelector.css';
+
+export type UserRole = 'Lawyer' | 'Bank Administrator';
 
 interface LoginRoleSelectorProps {
-    onSelectRole: (role: string) => void;
+    onSelectRole: (role: UserRole) => void;
+    initialRole?: UserRole;
 }
 
-export const LoginRoleSelector = ({ onSelectRole }: LoginRoleSelectorProps) => {
-    const [selectedRole, setSelectedRole] = useState('Lawyer');
+export const LoginRoleSelector = ({ onSelectRole, initialRole = 'Lawyer' }: LoginRoleSelectorProps) => {
+    const [selectedRole, setSelectedRole] = useState<UserRole>(initialRole);
 
     return (
         <div className="login-screen__role-block">

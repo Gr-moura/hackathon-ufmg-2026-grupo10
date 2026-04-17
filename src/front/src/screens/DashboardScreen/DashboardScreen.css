@@ -21,7 +21,7 @@
 }
 
 .dashboard-screen__cost-card {
-  background: rgba(243, 236, 228, 0.72);
+  background: var(--active_button_bg);
 }
 
 .dashboard-screen__cost-copy {
@@ -35,7 +35,7 @@
 }
 
 .dashboard-screen__audit {
-  background: rgba(255, 255, 255, 0.62);
+  background: var(--active_button_bg);
 }
 
 .dashboard-screen__risk {

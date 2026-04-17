@@ -1,5 +1,6 @@
 import { Icon } from '../../../modules/ui/Icon';
 import { useState } from 'react';
+import './LoginInputs.css';
 
 
 interface LoginInputsProps {

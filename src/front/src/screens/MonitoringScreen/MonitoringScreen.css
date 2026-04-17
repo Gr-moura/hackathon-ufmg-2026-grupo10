@@ -1,117 +1,123 @@
 @import '../../modules/theme/theme.css';
 
-.monitoring-screen__grid {
-  align-items: start;
-}
-
-.monitoring-screen__hero {
-  background: rgba(17, 17, 18, 0.92);
-  color: #f3f3f3;
-}
-
 .monitoring-screen__kicker {
   color: #ffb77d;
 }
 
-.monitoring-screen__headline {
-  color: #f7f7f7;
-}
-
-.monitoring-screen__lede {
-  color: rgba(241, 241, 241, 0.72);
-}
-
-.monitoring-screen__stats {
-  margin-top: 28px;
-}
-
-.monitoring-screen__stat-card {
-  background: rgba(255, 255, 255, 0.06);
-  color: #f3f3f3;
-  border-color: rgba(255, 255, 255, 0.08);
-}
-
-.monitoring-screen__stat-card--accent {
-  background: linear-gradient(135deg, var(--primary), var(--primary-soft));
-  color: white;
-}
-
-.monitoring-screen__stat-icon {
-  color: #bdbdbd;
-}
-
-.monitoring-screen__stat-icon--accent {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.monitoring-screen__note {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffb77d;
-}
-
-.monitoring-screen__note--accent {
-  background: rgba(255, 255, 255, 0.16);
-  color: white;
-}
-
-.monitoring-screen__stat-label--accent {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.monitoring-screen__stat-value {
-  color: inherit;
-}
-
-.monitoring-screen__feed-column {
-  min-height: 100%;
-}
-
-.monitoring-screen__feed-title {
-  font-size: 1.4rem;
-}
-
-.monitoring-screen__feed-subtitle {
-  margin: 8px 0 0;
-}
-
-.monitoring-screen__feed-item {
-  align-items: flex-start;
-}
-
-.monitoring-screen__feed-main {
-  align-items: flex-start;
-}
-
-.monitoring-screen__case-title {
-  font-size: 1rem;
-  margin-top: 8px;
-}
-
-.monitoring-screen__feed-copy {
-  margin: 8px 0 0;
-  line-height: 1.6;
-}
-
-.monitoring-screen__meta {
-  min-width: 110px;
-  text-align: right;
-}
-
-.monitoring-screen__time {
-  font-size: 0.74rem;
-  margin-bottom: 8px;
-}
-
 .monitoring-screen__table-panel {
-  margin-top: 24px;
+  margin-top: 0;
+}
+
+.monitoring-screen__table-panel--expanded {
+  min-height: calc(100vh - 110px);
+}
+
+.monitoring-screen__table-heading {
+  align-items: flex-start;
 }
 
 .monitoring-screen__table-title {
   font-size: 1.4rem;
 }
 
+.monitoring-screen__table-subtitle {
+  margin: 8px 0 0;
+  max-width: 72ch;
+  line-height: 1.6;
+}
+
+.monitoring-screen__lawyer-name {
+  font-weight: 800;
+}
+
+.monitoring-screen__lawyer-role {
+  font-size: 0.78rem;
+}
+
+.monitoring-screen__adherence-wrap {
+  gap: 10px;
+}
+
+.monitoring-screen__recommended.warning {
+  color: var(--warning);
+}
+
+.monitoring-screen__recommended.success {
+  color: var(--success);
+}
+
+.monitoring-screen .table-wrap {
+  overflow-x: auto;
+}
+
+.monitoring-screen .data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.monitoring-screen .data-table th,
+.monitoring-screen .data-table td {
+  text-align: left;
+  padding: 18px 12px;
+  border-top: 1px solid rgba(91, 67, 52, 0.08);
+}
+
+.monitoring-screen .data-table thead th {
+  border-top: 0;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.monitoring-screen .row-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.monitoring-screen .avatar {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: rgba(27, 27, 27, 0.92);
+  color: #d2d2d2;
+  font-size: 0.72rem;
+  font-weight: 900;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.monitoring-screen .bar {
+  width: 96px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(91, 67, 52, 0.12);
+  overflow: hidden;
+}
+
+.monitoring-screen .bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary-soft), var(--primary));
+}
+
 @media (max-width: 1180px) {
-  .monitoring-screen__grid {
-    grid-template-columns: 1fr;
+  .monitoring-screen__table-panel--expanded {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .monitoring-screen__table-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .monitoring-screen .data-table th,
+  .monitoring-screen .data-table td {
+    padding-inline: 8px;
   }
 }
