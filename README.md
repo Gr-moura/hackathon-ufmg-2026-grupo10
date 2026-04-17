@@ -142,19 +142,31 @@ Além do repositório, submeter:
 
 ---
 
-## Como Usar Este Repositório
+## Como Submeter
 
-1. **Fork** este repositório para a conta da sua equipe no GitHub
-2. Clone o fork localmente
-3. Siga as instruções do [`SETUP.md`](./SETUP.md) para configurar o ambiente
-4. Desenvolva sua solução dentro da estrutura de pastas proposta
-5. Faça commits frequentes com mensagens descritivas
-6. Submeta o link do repositório até o prazo
+### 1. Crie o repositório da sua equipe
+
+Acesse [github.com/talismanai/hackathon-ufmg-2026](https://github.com/talismanai/hackathon-ufmg-2026) e clique em **"Use this template" → "Create a new repository"**.
+
+- **Nome do repositório:** `hackathon-ufmg-2026-grupo<N>` — substitua `<N>` pelo número do seu grupo  
+  _Exemplo: `hackathon-ufmg-2026-grupo7`_
+- **Visibilidade:** `Public`
+
+### 2. Clone e desenvolva
 
 ```bash
-# Clone seu fork
-git clone https://github.com/<seu-usuario>/hackathon-ufmg-2026.git
-cd hackathon-ufmg-2026
+# Clone o repositório da sua equipe
+git clone https://github.com/<seu-usuario>/hackathon-ufmg-2026-grupo<N>.git
+cd hackathon-ufmg-2026-grupo<N>
 
-# Siga o SETUP.md para configurar o ambiente
+# Configure o ambiente seguindo o SETUP.md
+```
+
+### 3. Submeta
+
+Envie a URL do seu repositório público para o formulário de entrega até **18/04 às 04:00**.
+
+A URL deve seguir o formato:
+```
+https://github.com/<usuario-ou-org>/hackathon-ufmg-2026-grupo<N>
 ```
