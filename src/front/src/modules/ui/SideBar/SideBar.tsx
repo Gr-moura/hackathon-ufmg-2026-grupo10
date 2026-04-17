@@ -2,7 +2,7 @@ import { Icon } from '../Icon';
 import { useMemo } from 'react';
 import type { UserRole } from '../LoginRoleSelector/LoginRoleSelector';
 import './SideBar.css';
-import { themeOptions, type ThemeName } from '../../theme/palettes';
+import type { ThemeName } from '../../theme/palettes';
 
 
 export function SideBar({
@@ -50,7 +50,7 @@ export function SideBar({
         {navigationItems.map((item) => (
             item && (
               <li key={item.label}>
-                <button className={`nav-button ${currentPath === item.path ? 'active' : ''}`} type="button" onClick={() => onNavigate(item.path)}>
+                <button className={`nav-button ${currentPath === item.path || currentPath.startsWith(item.path + '/') ? 'active' : ''}`} type="button" onClick={() => onNavigate(item.path)}>
                   <Icon name={item.icon} />
                   <span>{item.label}</span>
                 </button>
