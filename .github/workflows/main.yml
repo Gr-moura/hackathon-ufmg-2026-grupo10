@@ -1,0 +1,59 @@
+name: CI Hackathon UFMG 2026
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+jobs:
+  # --- JOB FRONT-END (Vite + TS) ---
+  frontend-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/front
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: src/front/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Type Check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+  # --- JOB BACK-END (Python + uv) ---
+  backend-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/back # Ajuste aqui se o nome da pasta for outro
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true # Ativa o cache do uv automaticamente
+
+      - name: Setup Python
+        run: uv python install 3.10
+
+      - name: Install dependencies
+        # O uv busca o pyproject.toml ou requirements.txt automaticamente
+        run: uv sync --frozen || uv pip install -r requirements.txt 
+
+      - name: Lint (Opcional)
+        run: uv run ruff check . || echo "Ruff não instalado"
