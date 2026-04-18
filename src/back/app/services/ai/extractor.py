@@ -1,4 +1,4 @@
-"""Extrator de metadados jurídicos de PDFs via OpenAI Responses API.
+"""Extrator de metadados jurídicos de PDFs via OpenAI Structured Outputs.
 
 Extrai UF, valor da causa e classificação (golpe vs genérico) da petição inicial.
 """
@@ -61,14 +61,17 @@ def extract_metadata(text: str, model: str | None = None) -> ProcessMetadata:
 
     text_truncated = text[:32_000] if len(text) > 32_000 else text
 
-    response = client.responses.parse(
+    response = client.beta.chat.completions.parse(
         model=chosen_model,
-        instructions=_SYSTEM_PROMPT,
-        input=f"Texto do processo:\n\n{text_truncated}",
-        text_format=ProcessMetadata,
+        messages=[
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": f"Texto do processo:\n\n{text_truncated}"},
+        ],
+        response_format=ProcessMetadata,
+        temperature=0.1,
     )
 
-    result: ProcessMetadata = response.output_parsed
+    result: ProcessMetadata = response.choices[0].message.parsed or ProcessMetadata()
     logger.info(
         "Extração concluída — UF=%s | valor_causa=%.2f | sub_assunto=%s",
         result.uf,

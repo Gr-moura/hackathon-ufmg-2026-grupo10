@@ -14,8 +14,14 @@ WORKDIR /app
 # 2. Upgrade do pip
 RUN pip install --upgrade pip setuptools
 
-# 3. Instalação de dependências do Python (Cacheado se o pyproject.toml não mudar)
-# Usamos um truque para instalar as dependências sem precisar do código fonte completo primeiro
+# 3a. PyTorch CPU-only (instalado antes para usar o índice correto e evitar CUDA ~900MB)
+RUN pip install --no-cache-dir \
+    torch>=2.1.0 \
+    scikit-learn>=1.3.0 \
+    numpy>=1.24.0 \
+    --extra-index-url https://download.pytorch.org/whl/cpu
+
+# 3b. Instalação de demais dependências (Cacheado se o pyproject.toml não mudar)
 COPY pyproject.toml .
 RUN mkdir app && touch app/__init__.py && \
     pip install --no-cache-dir .[dev]

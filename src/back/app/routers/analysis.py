@@ -58,17 +58,26 @@ async def analyze_processo(
     db: DbDep,
     current_user: CurrentUser,
 ) -> AnaliseIAResponse:
+    import asyncio
+
+    from app.services.ai.pipeline import run_pipeline
+
     processo = db.get(Processo, processo_id)
     if not processo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Processo não encontrado")
 
-    # TODO(DEV-2): importar e chamar run_pipeline quando o pipeline IA estiver pronto
-    # from app.services.ai.pipeline import run_pipeline
-    # analise = await run_pipeline(processo, db)
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Pipeline IA em desenvolvimento pelo DEV-2",
-    )
+    try:
+        analise = await asyncio.to_thread(run_pipeline, processo_id, db)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except Exception as exc:
+        logger.error("Erro no pipeline IA: processo=%s erro=%s", processo_id, exc)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Falha no pipeline de IA: {exc}",
+        ) from exc
+
+    return _to_response(analise)
 
 
 @router.get("/processes/{processo_id}/analysis", response_model=AnaliseIAResponse)

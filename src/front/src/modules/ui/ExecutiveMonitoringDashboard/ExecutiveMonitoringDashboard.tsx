@@ -1,14 +1,47 @@
+import { useMetrics } from '../../../api/metrics';
 import { Icon } from '../Icon';
 import './ExecutiveMonitoringDashboard.css';
 
+const BRL = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const PCT = (v: number) => `${Math.round(v * 100)}%`;
+
 export function ExecutiveMonitoringDashboard({ className = '' }: { className?: string }) {
-    const statsCards = [
-        { label: 'Total Decisions', value: '1,429', note: '+12% vs LY', icon: 'task_alt' },
-        { label: 'Settlement Adherence', value: '94.2%', note: 'On Target', icon: 'verified_user' },
-        { label: 'Total Savings', value: 'R$ 2.4M', note: 'R$ 240k Saved', icon: 'payments' },
-        { label: 'High-Risk Cases', value: '42', note: 'Live Attention', icon: 'warning' },
-    ];
-    
+  const { data: metrics, isLoading } = useMetrics();
+
+  const statsCards = metrics
+    ? [
+        {
+          label: 'Total Decisions',
+          value: String(metrics.total_decisoes),
+          note: `${metrics.total_processos} processos`,
+          icon: 'task_alt',
+        },
+        {
+          label: 'Settlement Adherence',
+          value: metrics.aderencia_global != null ? PCT(metrics.aderencia_global) : '—',
+          note: 'On Target',
+          icon: 'verified_user',
+        },
+        {
+          label: 'Total Savings',
+          value: metrics.economia_total != null ? BRL(metrics.economia_total) : '—',
+          note: 'vs litigation cost',
+          icon: 'payments',
+        },
+        {
+          label: 'High-Risk Cases',
+          value: String(metrics.casos_alto_risco),
+          note: 'Confidence < 60%',
+          icon: 'warning',
+        },
+      ]
+    : [
+        { label: 'Total Decisions', value: '—', note: '— processos', icon: 'task_alt' },
+        { label: 'Settlement Adherence', value: '—', note: 'On Target', icon: 'verified_user' },
+        { label: 'Total Savings', value: '—', note: 'vs litigation cost', icon: 'payments' },
+        { label: 'High-Risk Cases', value: '—', note: 'Confidence < 60%', icon: 'warning' },
+      ];
+
   return (
     <section className={`panel panel-inner hero-banner executive-monitoring-dashboard ${className}`.trim()}>
       <div className="title-kicker executive-monitoring-dashboard__kicker">Executive Monitoring</div>
@@ -16,11 +49,12 @@ export function ExecutiveMonitoringDashboard({ className = '' }: { className?: s
         Bank UFMG <span className="accent">Operations</span>
       </h2>
       <p className="lede executive-monitoring-dashboard__lede">
-        Track adherence, savings, and high-risk cases in one control surface. Use the data to assess whether the agreement policy is working.
+        Track adherence, savings, and high-risk cases in one control surface. Use the data to assess
+        whether the agreement policy is working.
       </p>
 
       <div className="split-grid executive-monitoring-dashboard__stats">
-        {statsCards.slice(0, 4).map((card, index) => (
+        {statsCards.map((card, index) => (
           <article
             key={card.label}
             className={`metric-card executive-monitoring-dashboard__stat-card ${index === 3 ? 'executive-monitoring-dashboard__stat-card--accent' : ''}`}
@@ -34,12 +68,20 @@ export function ExecutiveMonitoringDashboard({ className = '' }: { className?: s
                     : 'executive-monitoring-dashboard__stat-icon'
                 }
               />
-              <span className={`mini-pill executive-monitoring-dashboard__note ${index === 3 ? 'executive-monitoring-dashboard__note--accent' : ''}`}>
+              <span
+                className={`mini-pill executive-monitoring-dashboard__note ${index === 3 ? 'executive-monitoring-dashboard__note--accent' : ''}`}
+              >
                 {card.note}
               </span>
             </div>
-            <div className={`metric-label ${index === 3 ? 'executive-monitoring-dashboard__stat-label--accent' : ''}`}>{card.label}</div>
-            <div className="metric-value executive-monitoring-dashboard__stat-value">{card.value}</div>
+            <div
+              className={`metric-label ${index === 3 ? 'executive-monitoring-dashboard__stat-label--accent' : ''}`}
+            >
+              {card.label}
+            </div>
+            <div className="metric-value executive-monitoring-dashboard__stat-value">
+              {isLoading ? '…' : card.value}
+            </div>
           </article>
         ))}
       </div>

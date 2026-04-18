@@ -41,6 +41,7 @@ export const MOCK_PROCESSO: ProcessoResponse = {
       parse_errors: null,
     },
   ],
+  metadata_extraida: { uf: 'MG', sub_assunto: 'generico', valor_da_causa: 15000 },
 };
 
 export const MOCK_PROCESSO_LIST: ProcessoListItem[] = [
