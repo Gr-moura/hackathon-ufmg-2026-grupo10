@@ -6,7 +6,6 @@ from __future__ import annotations
 
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 from openai import OpenAI
 from pydantic import BaseModel, Field
@@ -18,7 +17,8 @@ from app.services.ingestion.pdf import IngestedDocument, ingest_pdf
 logger = get_logger(__name__)
 
 _SYSTEM_PROMPT = """\
-Você é um assistente jurídico especializado em processos cíveis de não reconhecimento de contratação de empréstimo.
+Você é um assistente jurídico especializado em processos cíveis de não reconhecimento
+de contratação de empréstimo.
 
 Analise o texto fornecido e extraia:
 
@@ -46,29 +46,43 @@ class SubAssunto(str, Enum):
 
 
 class ProcessMetadata(BaseModel):
-    uf: Optional[str] = Field(None, description="Sigla do estado (ex: SP, MG, RJ)")
-    valor_da_causa: Optional[float] = Field(None, description="Valor da causa em reais")
-    sub_assunto: Optional[SubAssunto] = Field(
+    uf: str | None = Field(None, description="Sigla do estado (ex: SP, MG, RJ)")
+    valor_da_causa: float | None = Field(None, description="Valor da causa em reais")
+    sub_assunto: SubAssunto | None = Field(
         None, description="'golpe' se há indício de fraude de terceiro, 'generico' caso contrário"
     )
 
 
 def extract_metadata(text: str, model: str | None = None) -> ProcessMetadata:
-    """Extrai UF, valor da causa e sub-assunto de texto jurídico via OpenAI."""
+    """Extrai UF, valor da causa e sub-assunto de texto jurídico via OpenAI.
+
+    Usa `beta.chat.completions.parse` (Structured Outputs), alinhado ao valuator
+    e compatível com o SDK `openai>=1.40`. Levanta `RuntimeError` se a API key
+    estiver ausente — cabe ao chamador tratar o fallback.
+    """
     settings = get_settings()
+    if not settings.openai_api_key:
+        raise RuntimeError("OPENAI_API_KEY ausente — extração LLM indisponível")
+
     client = OpenAI(api_key=settings.openai_api_key)
     chosen_model = model or settings.openai_model_reasoning
 
     text_truncated = text[:32_000] if len(text) > 32_000 else text
 
-    response = client.responses.parse(
+    response = client.beta.chat.completions.parse(
         model=chosen_model,
-        instructions=_SYSTEM_PROMPT,
-        input=f"Texto do processo:\n\n{text_truncated}",
-        text_format=ProcessMetadata,
+        messages=[
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": f"Texto do processo:\n\n{text_truncated}"},
+        ],
+        response_format=ProcessMetadata,
+        temperature=0.0,
     )
 
-    result: ProcessMetadata = response.output_parsed
+    result = response.choices[0].message.parsed
+    if result is None:
+        raise RuntimeError("Extração LLM retornou payload vazio")
+
     logger.info(
         "Extração concluída — UF=%s | valor_causa=%.2f | sub_assunto=%s",
         result.uf,
@@ -84,7 +98,9 @@ def extract_from_pdf(path: Path, model: str | None = None) -> ProcessMetadata:
     return extract_metadata(doc.raw_text, model=model)
 
 
-def extract_from_documents(docs: list[IngestedDocument], model: str | None = None) -> ProcessMetadata:
+def extract_from_documents(
+    docs: list[IngestedDocument], model: str | None = None
+) -> ProcessMetadata:
     """Extrai metadados de múltiplos documentos de um processo.
 
     Prioriza a petição inicial; usa demais documentos como contexto.

@@ -367,6 +367,78 @@ class TestIngestionProcesso:
         assert r1.status_code == 200 and r2.status_code == 200
         assert r1.json()["id"] == r2.json()["id"]
 
+    def test_pipeline_preenche_trechos_chave_via_rag(
+        self, client: TestClient, db: Session
+    ) -> None:
+        """Com documentos contendo `raw_text`, o RAG deve popular trechos_chave."""
+        from app.db.models.documento import Documento
+
+        processo = Processo(
+            numero_processo="PROC-RAG-001",
+            advogado_id="00000000-0000-0000-0000-000000000001",
+            valor_causa=12000.0,
+            status="pendente",
+            metadata_extraida={
+                "uf": "MG",
+                "sub_assunto": "golpe",
+                "valor_da_causa": 12000.0,
+            },
+        )
+        db.add(processo)
+        db.flush()
+
+        db.add_all(
+            [
+                Documento(
+                    processo_id=processo.id,
+                    doc_type="PETICAO_INICIAL",
+                    original_filename="peticao.pdf",
+                    raw_text=(
+                        "A parte autora alega que nunca contratou o empréstimo "
+                        "e que houve golpe. Não reconhece a assinatura presente "
+                        "no instrumento contratual apresentado pelo banco. "
+                        "Sustenta ter sido vítima de fraude por terceiros."
+                    ),
+                ),
+                Documento(
+                    processo_id=processo.id,
+                    doc_type="CONTRATO",
+                    original_filename="contrato.pdf",
+                    raw_text=(
+                        "Contrato de empréstimo pessoal nº 1234 celebrado entre "
+                        "as partes no valor de R$ 12.000,00 com prazo de 36 meses."
+                    ),
+                ),
+            ]
+        )
+        db.commit()
+
+        token = get_advogado_token(client)
+        resp = client.post(
+            f"/processes/{processo.id}/analyze", headers=_auth(token)
+        )
+        assert resp.status_code == 200, resp.text
+        body = resp.json()
+        # trechos_chave deve conter pelo menos 1 entrada baseada nos docs
+        assert body["trechos_chave"], "RAG deveria ter populado trechos_chave"
+        assert all("doc" in t and "quote" in t for t in body["trechos_chave"])
+        # rationale deve mencionar o método RAG usado
+        assert "RAG=" in body["rationale"]
+        # Trechos chave devem vir dos docs fornecidos (doc_type esperado)
+        doc_types = {t["doc"] for t in body["trechos_chave"]}
+        assert doc_types <= {"PETICAO_INICIAL", "CONTRATO"}
+
+        # variaveis_extraidas persiste na AnaliseIA (não é exposto pelo schema,
+        # mas podemos verificar via DB diretamente).
+        analise = (
+            db.query(AnaliseIA)
+            .filter(AnaliseIA.id == uuid.UUID(body["id"]))
+            .one()
+        )
+        assert analise.variaveis_extraidas is not None
+        assert "rag_method" in analise.variaveis_extraidas
+        assert "probabilidade_vitoria_historica" in analise.variaveis_extraidas
+
 
 # ===========================================================================
 # Cenário 3 — HITL: Human-in-the-Loop (§4.5)
