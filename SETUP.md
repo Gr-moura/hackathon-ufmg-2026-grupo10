@@ -4,6 +4,35 @@
 
 ---
 
+## Quick Start (recomendado)
+
+O script `setup.sh` verifica pré-requisitos, configura o `.env`, sobe todos os containers e aguarda os serviços ficarem prontos:
+
+```bash
+git clone https://github.com/ViolanteGabriel/hackathon-ufmg-2026-grupo10.git
+cd hackathon-ufmg-2026-grupo10
+bash setup.sh
+```
+
+O script irá:
+1. Verificar Docker, Docker Compose e Git
+2. Criar o `.env` a partir do `.env.example` (se não existir)
+3. Solicitar a chave da OpenAI interativamente (caso não esteja configurada)
+4. Verificar os arquivos do modelo RN1
+5. Fazer o build e subir todos os containers (`docker compose up --build -d`)
+6. Aguardar os serviços responderem nas portas 8000 e 5173
+
+### Opções do script
+
+```bash
+bash setup.sh --no-build   # Sobe os serviços sem reconstruir as imagens (mais rápido)
+bash setup.sh --down       # Para e remove todos os containers e volumes
+```
+
+Ao final, o script exibe as URLs de acesso e as credenciais de demo.
+
+---
+
 ## Pré-requisitos
 
 | Ferramenta | Versão mínima | Verificar |
@@ -27,7 +56,7 @@ cd hackathon-ufmg-2026-grupo10
 
 ## 2. Configurar variáveis de ambiente
 
-Copie o arquivo de exemplo e preencha a chave da OpenAI:
+O `setup.sh` faz isso automaticamente. Para configuração manual:
 
 ```bash
 cp .env.example .env
@@ -82,6 +111,14 @@ src/models/RN1/training/
 ---
 
 ## 4. Subir o ambiente completo
+
+**Via script (recomendado):**
+
+```bash
+bash setup.sh
+```
+
+**Manualmente:**
 
 ```bash
 docker compose up --build
@@ -192,6 +229,15 @@ VITE_API_BASE_URL=http://localhost:8000 npm run dev
 ## 9. Comandos úteis
 
 ```bash
+# Setup completo (primeira vez ou após reset)
+bash setup.sh
+
+# Setup sem rebuild das imagens (mais rápido)
+bash setup.sh --no-build
+
+# Derrubar tudo e recomeçar do zero
+bash setup.sh --down && bash setup.sh
+
 # Ver logs de um serviço específico
 docker compose logs -f back
 docker compose logs -f front
