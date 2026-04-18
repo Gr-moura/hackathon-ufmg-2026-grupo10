@@ -5,10 +5,11 @@ import './LoginInputs.css';
 
 interface LoginInputsProps {
     inputType: "Login" | "Password";
+    placeholder?: string;
     setValueFunction?: (value: string) => void;
 }
 
-export const LoginInputs = ({ inputType, setValueFunction }: LoginInputsProps) => {
+export const LoginInputs = ({ inputType, placeholder, setValueFunction }: LoginInputsProps) => {
     const [inputValue, setInputValue] = useState("");
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
@@ -28,14 +29,14 @@ export const LoginInputs = ({ inputType, setValueFunction }: LoginInputsProps) =
                 {inputType === "Login" && (<>
                     <Icon name="person" className="icon-prefix" />
                     <input 
-                        className="text-input" type="text" placeholder="username@bankufmg.com" 
+                        className="text-input" type="text" placeholder={placeholder || (inputType === "Login" ? "username@bankufmg.com" : undefined)}
                         value={inputValue} onChange={(e) => {setInputValue(e.target.value); if(setValueFunction) setValueFunction(e.target.value)}} 
                     />
                 </>)}
                 {inputType === "Password" && (<>
                     <Icon name="lock" className="icon-prefix" />
                     <input 
-                        id="password" className="text-input" type={isPasswordVisible ? "text" : "password"} placeholder="••••••••••••" 
+                        id="password" className="text-input" type={isPasswordVisible ? "text" : "password"} placeholder={placeholder || "••••••••••••"} 
                         value={inputValue} onChange={(e) => {setInputValue(e.target.value); if(setValueFunction) setValueFunction(e.target.value)}}
                     />
                     <button 

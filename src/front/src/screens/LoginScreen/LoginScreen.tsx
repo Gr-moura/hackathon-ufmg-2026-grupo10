@@ -5,23 +5,20 @@ import { saveToken } from '../../api/client';
 import { Icon } from '../../modules/ui/Icon';
 import { LoginRoleSelector } from '../../modules/ui/LoginRoleSelector/LoginRoleSelector';
 import './LoginScreen.css';
+import { LoginInputs } from '../../modules/ui/LoginInputs/LoginInputs';
 
 export function LoginScreen() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState('Lawyer');
   const [error, setError] = useState<string | null>(null);
-
   const login = useLogin();
-
-  const emailForRole = role === 'Lawyer' ? 'advogado@banco.com' : 'banco@banco.com';
 
   async function handleAccess() {
     setError(null);
     try {
-      const data = await login.mutateAsync({ email: email || emailForRole, password: password || (role === 'Lawyer' ? 'advogado123' : 'banco123') });
+      const data = await login.mutateAsync({ email: email, password: password });
       saveToken(data.access_token);
       window.localStorage.setItem('enteros-role', role);
       navigate(role === 'Bank Administrator' ? '/monitoring' : '/home');
@@ -46,40 +43,8 @@ export function LoginScreen() {
           <LoginRoleSelector onSelectRole={(r) => { setRole(r); setEmail(''); setPassword(''); }} />
 
           <div className="form-grid login-screen__form">
-            <div>
-              <div className="login-screen__label-row">
-                <label className="field-label">ID or Email Address</label>
-              </div>
-              <div className="input-row">
-                <Icon name="person" className="icon-prefix" />
-                <input
-                  className="text-input" type="text"
-                  placeholder={emailForRole}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="login-screen__label-row">
-                <label className="field-label">Password</label>
-              </div>
-              <div className="input-row">
-                <Icon name="lock" className="icon-prefix" />
-                <input
-                  className="text-input"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAccess()}
-                />
-                <button type="button" className="icon-button icon-suffix" onClick={() => setShowPassword((v) => !v)}>
-                  <Icon name={showPassword ? 'visibility' : 'visibility_off'} />
-                </button>
-              </div>
-            </div>
+            <LoginInputs inputType="Login" setValueFunction={setEmail} />
+            <LoginInputs inputType="Password" placeholder="password" setValueFunction={setPassword} />
 
             {error && <p style={{ color: 'var(--danger)', fontSize: '0.85rem', margin: 0 }}>{error}</p>}
 
