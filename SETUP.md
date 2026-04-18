@@ -68,9 +68,9 @@ Abra `.env` e substitua `sk-...` pela chave real:
 OPENAI_API_KEY=sk-proj-SUA_CHAVE_AQUI
 OPENAI_MODEL_REASONING=gpt-4o-mini
 OPENAI_MODEL_EMBEDDING=text-embedding-3-small
-POSTGRES_PASSWORD=eanteros_dev
+POSTGRES_PASSWORD=enteros_dev
 JWT_SECRET=change-me-only-for-demo
-DATABASE_URL=postgresql+psycopg://eanteros:eanteros_dev@db:5432/eanteros
+DATABASE_URL=postgresql+psycopg://enteros:enteros_dev@db:5432/enteros
 LOG_LEVEL=INFO
 ```
 
@@ -186,7 +186,7 @@ pip install torch scikit-learn numpy --extra-index-url https://download.pytorch.
 pip install -e ".[dev]"
 
 # Configurar variáveis de ambiente
-export DATABASE_URL="postgresql+psycopg://eanteros:eanteros_dev@localhost:5432/eanteros"
+export DATABASE_URL="postgresql+psycopg://enteros:enteros_dev@localhost:5432/enteros"
 export OPENAI_API_KEY="sk-proj-..."
 export RN1_DIR="../../src/models/RN1"
 export RN1_MODEL_PATH="../../models/litigation_model.pth"
@@ -215,8 +215,8 @@ VITE_API_BASE_URL=http://localhost:8000 npm run dev
 | `OPENAI_API_KEY` | Chave da OpenAI | — (obrigatória) |
 | `OPENAI_MODEL_REASONING` | Modelo para extração e valoração | `gpt-4o-mini` |
 | `OPENAI_MODEL_EMBEDDING` | Modelo de embeddings para RAG | `text-embedding-3-small` |
-| `DATABASE_URL` | URL de conexão PostgreSQL | `postgresql+psycopg://eanteros:eanteros_dev@db:5432/eanteros` |
-| `POSTGRES_PASSWORD` | Senha do banco | `eanteros_dev` |
+| `DATABASE_URL` | URL de conexão PostgreSQL | `postgresql+psycopg://enteros:enteros_dev@db:5432/enteros` |
+| `POSTGRES_PASSWORD` | Senha do banco | `enteros_dev` |
 | `JWT_SECRET` | Chave para assinar tokens JWT | `change-me-only-for-demo` |
 | `JWT_EXPIRE_MINUTES` | Expiração do token em minutos | `480` (8h) |
 | `LOG_LEVEL` | Nível de log (`DEBUG`, `INFO`, `WARNING`) | `INFO` |

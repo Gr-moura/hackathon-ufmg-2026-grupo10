@@ -2,8 +2,8 @@
 set -e
 
 POSTGRES_HOST="${POSTGRES_HOST:-db}"
-POSTGRES_USER="${POSTGRES_USER:-eanteros}"
-POSTGRES_DB="${POSTGRES_DB:-eanteros}"
+POSTGRES_USER="${POSTGRES_USER:-enteros}"
+POSTGRES_DB="${POSTGRES_DB:-enteros}"
 
 echo "Aguardando PostgreSQL..."
 until PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c '\q'; do

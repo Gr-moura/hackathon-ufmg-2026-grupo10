@@ -56,7 +56,7 @@ export function DashboardScreen() {
   const { processoId } = useParams<{ processoId: string }>();
   const navigate = useNavigate();
 
-  const isAdmin = useMemo(() => window.localStorage.getItem('eanteros-role') === 'Bank Administrator', []);
+  const isAdmin = useMemo(() => window.localStorage.getItem('enteros-role') === 'Bank Administrator', []);
 
   const [adjusting, setAdjusting] = useState(false);
   const [adjustValue, setAdjustValue] = useState('');

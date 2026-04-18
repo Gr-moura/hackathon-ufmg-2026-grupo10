@@ -397,14 +397,14 @@ services:
   db:
     image: pgvector/pgvector:pg16
     environment:
-      POSTGRES_USER: eanteros
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-eanteros_dev}
-      POSTGRES_DB: eanteros
+      POSTGRES_USER: enteros
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-enteros_dev}
+      POSTGRES_DB: enteros
     ports: ["5432:5432"]
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U eanteros"]
+      test: ["CMD-SHELL", "pg_isready -U enteros"]
       interval: 5s
       retries: 10
 
@@ -442,9 +442,9 @@ volumes:
 OPENAI_API_KEY=sk-...           # fornecido pela banca
 OPENAI_MODEL_REASONING=gpt-4o-mini
 OPENAI_MODEL_EMBEDDING=text-embedding-3-small
-POSTGRES_PASSWORD=eanteros_dev
+POSTGRES_PASSWORD=enteros_dev
 JWT_SECRET=change-me-only-for-demo
-DATABASE_URL=postgresql+psycopg://eanteros:eanteros_dev@db:5432/eanteros
+DATABASE_URL=postgresql+psycopg://enteros:enteros_dev@db:5432/enteros
 LOG_LEVEL=INFO
 ```
 

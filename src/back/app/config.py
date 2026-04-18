@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     openai_model_reasoning: str = "gpt-4o-mini"
     openai_model_embedding: str = "text-embedding-3-small"
 
-    postgres_password: str = "eanteros_dev"
-    database_url: str = "postgresql+psycopg://eanteros:eanteros_dev@db:5432/eanteros"
+    postgres_password: str = "enteros_dev"
+    database_url: str = "postgresql+psycopg://enteros:enteros_dev@db:5432/enteros"
 
     jwt_secret: str = "change-me-only-for-demo"
     jwt_algorithm: str = "HS256"

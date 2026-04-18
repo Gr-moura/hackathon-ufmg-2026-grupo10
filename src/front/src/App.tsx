@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
 
 function App() {
   const [theme, setTheme] = useState<ThemeName>(() => {
-    const savedTheme = window.localStorage.getItem('eanteros-theme');
+    const savedTheme = window.localStorage.getItem('enteros-theme');
     return savedTheme === 'dark' ? 'dark' : 'light';
   });
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ function App() {
   const handleToggleTheme = () => {
     setTheme((currentTheme) => {
       const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
-      window.localStorage.setItem('eanteros-theme', nextTheme);
+      window.localStorage.setItem('enteros-theme', nextTheme);
       return nextTheme;
     });
   };

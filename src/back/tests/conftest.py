@@ -15,7 +15,7 @@ Motivo do SQLite:
 Execução:
   cd src/back && pytest tests/
   ou com PostgreSQL real:
-  TEST_DATABASE_URL=postgresql+psycopg://eanteros:eanteros_dev@localhost:5432/eanteros_test pytest tests/
+  TEST_DATABASE_URL=postgresql+psycopg://enteros:enteros_dev@localhost:5432/enteros_test pytest tests/
 """
 
 from __future__ import annotations

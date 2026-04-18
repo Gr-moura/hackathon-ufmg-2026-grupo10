@@ -2,14 +2,14 @@ services:
   db:
     image: pgvector/pgvector:pg16
     environment:
-      POSTGRES_USER: eanteros
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-eanteros_dev}
-      POSTGRES_DB: eanteros
+      POSTGRES_USER: enteros
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-enteros_dev}
+      POSTGRES_DB: enteros
     ports: ["5432:5432"]
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U eanteros"]
+      test: ["CMD-SHELL", "pg_isready -U enteros"]
       interval: 5s
       retries: 10
 

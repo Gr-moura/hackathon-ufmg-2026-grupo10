@@ -69,9 +69,9 @@ Edite `.env` e preencha, no mínimo, a chave da OpenAI:
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL_REASONING=gpt-4o-mini
 OPENAI_MODEL_EMBEDDING=text-embedding-3-small
-POSTGRES_PASSWORD=eanteros_dev
+POSTGRES_PASSWORD=enteros_dev
 JWT_SECRET=change-me-only-for-demo
-DATABASE_URL=postgresql+psycopg://eanteros:eanteros_dev@db:5432/eanteros
+DATABASE_URL=postgresql+psycopg://enteros:enteros_dev@db:5432/enteros
 LOG_LEVEL=INFO
 ```
 
@@ -91,7 +91,7 @@ O serviço `back` executa `alembic upgrade head` antes de iniciar o Uvicorn, e o
 | Backend (Swagger) | http://localhost:8000/docs |
 | Backend (ReDoc) | http://localhost:8000/redoc |
 | Healthcheck | http://localhost:8000/health |
-| PostgreSQL | `localhost:5432` (usuário: `eanteros`, DB: `eanteros`) |
+| PostgreSQL | `localhost:5432` (usuário: `enteros`, DB: `enteros`) |
 
 ### 5. (Opcional) Popular dados históricos para demo
 
@@ -127,12 +127,12 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 
 # Prepare o banco
-createdb eanteros
-psql -d eanteros -c "CREATE EXTENSION IF NOT EXISTS vector;"
+createdb enteros
+psql -d enteros -c "CREATE EXTENSION IF NOT EXISTS vector;"
 
 # Crie o .env local (copie do .env.example na raiz e ajuste a DATABASE_URL)
 cat > .env << EOF
-DATABASE_URL=postgresql+psycopg://seu_usuario:sua_senha@localhost:5432/eanteros
+DATABASE_URL=postgresql+psycopg://seu_usuario:sua_senha@localhost:5432/enteros
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL_REASONING=gpt-4o-mini
 OPENAI_MODEL_EMBEDDING=text-embedding-3-small
