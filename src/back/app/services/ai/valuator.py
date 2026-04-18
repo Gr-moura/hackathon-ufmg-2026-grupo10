@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, List
+from typing import Any
 
 import yaml
 from openai import OpenAI
@@ -20,7 +20,7 @@ def load_policy() -> dict[str, Any]:
     """Carrega as configurações de política de acordos do arquivo policy.yaml."""
     policy_path = Path(__file__).parents[3] / "policy.yaml"
     try:
-        with open(policy_path, "r", encoding="utf-8") as f:
+        with open(policy_path, encoding="utf-8") as f:
             return yaml.safe_load(f)
     except Exception as e:
         logger.error("Erro ao carregar policy.yaml em %s: %s", policy_path, e)
@@ -68,8 +68,8 @@ class ValuationContext(BaseModel):
     valor_da_causa: float
     probabilidade_vitoria: float
     sub_assunto: str
-    pontos_fortes: List[str] = Field(default_factory=list)
-    pontos_fracos: List[str] = Field(default_factory=list)
+    pontos_fortes: list[str] = Field(default_factory=list)
+    pontos_fracos: list[str] = Field(default_factory=list)
     document_texts: str = Field(
         "", description="Texto consolidado de todos os documentos"
     )
@@ -134,7 +134,7 @@ def evaluate_settlement(
 
 
 def evaluate_from_documents(
-    documents: List[IngestedDocument],
+    documents: list[IngestedDocument],
     base_context: ValuationContext,
     model: str | None = None,
 ) -> ValuationResult:
@@ -149,7 +149,7 @@ def evaluate_from_documents(
 
 
 def evaluate_from_pdf_paths(
-    paths: List[Path], base_context: ValuationContext, model: str | None = None
+    paths: list[Path], base_context: ValuationContext, model: str | None = None
 ) -> ValuationResult:
     """
     Ingere arquivos PDF de caminhos locais e processa o acordo.
