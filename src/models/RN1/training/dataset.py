@@ -14,7 +14,7 @@ class LitigationDataset(Dataset):
         else:
             raise ValueError("Either csv_path or dataframe must be provided")
 
-        self.base_features = ['UF', 'Assunto', 'Sub-assunto', 'Valor da causa']
+        self.base_features = ['UF', 'Sub-assunto', 'Valor da causa']
         self.doc_features = [
             'Contrato', 'Extrato', 'Comprovante de crédito', 'Dossiê',
             'Demonstrativo de evolução da dívida', 'Laudo referenciado'
@@ -43,7 +43,7 @@ class LitigationDataset(Dataset):
 
         # Label encode categories
         self.label_encoders = {}
-        for col in ['UF', 'Assunto', 'Sub-assunto']:
+        for col in ['UF', 'Sub-assunto']:
             if col in self.df.columns:
                 le = LabelEncoder()
                 self.df[col] = le.fit_transform(self.df[col].astype(str))
