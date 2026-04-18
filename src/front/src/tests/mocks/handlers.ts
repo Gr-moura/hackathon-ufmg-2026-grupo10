@@ -32,6 +32,7 @@ export const MOCK_PROCESSO: ProcessoResponse = {
   valor_causa: 15000,
   status: 'pendente',
   created_at: '2026-04-17T10:00:00Z',
+  metadata_extraida: { uf: 'MG', sub_assunto: 'generico', valor_da_causa: 15000 },
   documentos: [
     {
       id: '00000000-0000-0000-0000-000000000020',
@@ -120,12 +121,12 @@ export const handlers = [
     return HttpResponse.json({ detail: 'Processo não encontrado' }, { status: 404 });
   }),
 
-  http.post(`${BASE}/processes/:processoId/analyze`, () =>
-    HttpResponse.json(
-      { detail: 'Pipeline IA em desenvolvimento pelo DEV-2' },
-      { status: 501 },
-    ),
-  ),
+  http.post(`${BASE}/processes/:processoId/analyze`, ({ params }) => {
+    if (params['processoId'] === MOCK_PROCESSO.id) {
+      return HttpResponse.json(MOCK_ANALISE);
+    }
+    return HttpResponse.json({ detail: 'Processo não encontrado' }, { status: 404 });
+  }),
 
   http.get(`${BASE}/processes/:processoId/analysis`, ({ params }) => {
     if (params['processoId'] === MOCK_PROCESSO.id) {

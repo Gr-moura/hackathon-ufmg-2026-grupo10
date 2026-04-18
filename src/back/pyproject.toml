@@ -15,7 +15,7 @@ dependencies = [
     "alembic==1.13.*",
     "psycopg[binary]==3.2.*",
     "pgvector==0.3.*",
-    "openai==1.54.*",
+    "openai==2.32.0",
     "tiktoken==0.8.*",
     "pdfplumber==0.11.*",
     "pytesseract==0.3.*",

@@ -23,16 +23,16 @@ describe('Processes Hooks', () => {
     expect(result.current.data).toEqual(MOCK_PROCESSO);
   });
 
-  it('useAnalyzeProcesso should fail with 501 (as expected in dev)', async () => {
+  it('useAnalyzeProcesso returns the analysis payload on success', async () => {
     const { result } = renderHook(() => useAnalyzeProcesso(), {
       wrapper: createWrapper(),
     });
 
     result.current.mutate(MOCK_PROCESSO.id);
 
-    await waitFor(() => expect(result.current.isError).toBe(true));
-    // @ts-ignore - access to axios error status
-    expect(result.current.error?.response?.status).toBe(501);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data?.processo_id).toBe(MOCK_PROCESSO.id);
+    expect(result.current.data?.decisao).toBe('ACORDO');
   });
 
   it('useRegisterDecision should succeed with 204', async () => {

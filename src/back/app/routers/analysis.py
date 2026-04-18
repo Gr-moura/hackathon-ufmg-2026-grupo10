@@ -1,4 +1,4 @@
-"""Router de análise — DB layer completo; pipeline IA (DEV-2) chamado via run_pipeline."""
+"""Router de análise — DB layer + pipeline IA (executa run_pipeline)."""
 import uuid
 
 from fastapi import APIRouter, HTTPException, status
@@ -17,6 +17,7 @@ from app.schemas.analysis import (
     PropostaAcordoResponse,
     TrechoChave,
 )
+from app.services.ai.pipeline import run_pipeline
 
 router = APIRouter(tags=["analysis"])
 logger = get_logger(__name__)
@@ -76,6 +77,7 @@ async def analyze_processo(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Falha no pipeline de IA: {exc}",
         ) from exc
+
 
     return _to_response(analise)
 
