@@ -40,7 +40,7 @@ done
 # ── Banner ───────────────────────────────────────────────────────────────────
 echo -e "${BOLD}"
 echo "  ╔═══════════════════════════════════════════╗"
-echo "  ║   EanterOS — Política de Acordos           ║"
+echo "  ║   EanterOS — Política de Acordos          ║"
 echo "  ║   Hackathon UFMG 2026 · Grupo 10          ║"
 echo "  ╚═══════════════════════════════════════════╝"
 echo -e "${RESET}"
