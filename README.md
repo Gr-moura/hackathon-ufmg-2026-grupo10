@@ -7,7 +7,7 @@
 
 ## O Problema
 
-O Banco UFMG recebe ~5.000 processos/mês onde clientes alegam não reconhecer a contratação de um empréstimo. Para cada processo, um advogado externo decide: **propor acordo** ou **ir à defesa**. Sem ferramenta, essa decisão é subjetiva, lenta e impossível de monitorar em escala.
+O Banco UFMG recebe ~15.000 novos processos/mês onde clientes alegam não reconhecer a contratação de um empréstimo. Para cada processo, um advogado externo decide: **propor acordo** ou **ir à defesa**. Sem ferramenta, essa decisão é subjetiva, lenta e impossível de monitorar em escala.
 
 ## Nossa Solução
 
