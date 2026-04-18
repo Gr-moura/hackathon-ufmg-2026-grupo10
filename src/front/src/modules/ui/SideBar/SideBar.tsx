@@ -38,7 +38,7 @@ export function SideBar({
           <Icon name="account_balance" />
         </div>
         <div>
-          <h1 className="brand-name">EnterOS</h1>
+          <h1 className="brand-name">EanterOS</h1>
           <p className="brand-subtitle">Diretoria Jurídica</p>
         </div>
         <button type="button" className="sidebar-theme-button" onClick={onToggleTheme} aria-label={`Alternar para modo ${theme === 'light' ? 'escuro' : 'claro'}`}>

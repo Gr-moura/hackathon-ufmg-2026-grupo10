@@ -114,7 +114,7 @@ export function Home() {
                         <div className="glass-card home-screen__support-card">
                             <h4 className="section-title-strong home-screen__support-title">Dica de navegação</h4>
                             <p className="muted home-screen__support-copy">
-                                Use a barra lateral a qualquer momento para trocar de módulo. O EnterOS mantém o contexto operacional consistente entre as telas.
+                                Use a barra lateral a qualquer momento para trocar de módulo. O EanterOS mantém o contexto operacional consistente entre as telas.
                             </p>
                         </div>
                     </aside>

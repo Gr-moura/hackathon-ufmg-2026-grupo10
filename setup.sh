@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# setup.sh — EnterOS: Política de Acordos Inteligente
+# setup.sh — EanterOS: Política de Acordos Inteligente
 # Instala dependências, configura o ambiente e sobe todos os serviços.
 # Uso: bash setup.sh [--no-build] [--down]
 # =============================================================================
@@ -40,7 +40,7 @@ done
 # ── Banner ───────────────────────────────────────────────────────────────────
 echo -e "${BOLD}"
 echo "  ╔═══════════════════════════════════════════╗"
-echo "  ║   EnterOS — Política de Acordos           ║"
+echo "  ║   EanterOS — Política de Acordos           ║"
 echo "  ║   Hackathon UFMG 2026 · Grupo 10          ║"
 echo "  ╚═══════════════════════════════════════════╝"
 echo -e "${RESET}"
