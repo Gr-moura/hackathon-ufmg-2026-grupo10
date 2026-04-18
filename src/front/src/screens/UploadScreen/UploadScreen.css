@@ -28,6 +28,7 @@
 }
 
 .upload-screen__summary {
+  width: 100%;
   margin-bottom: 24px;
 }
 
@@ -35,7 +36,35 @@
   font-size: 2rem;
 }
 
+.upload-screen__title-row-parent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.upload-screen__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.upload-screen__new-analysis-button {
+  align-self: flex-end;
+  justify-self: flex-end;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
 .upload-screen__subtitle {
+  width: 100%;
   margin: 8px 0 0;
 }
 
@@ -93,6 +122,17 @@
 .upload-screen__drop-copy {
   max-width: 440px;
   margin: 12px auto 18px;
+}
+
+.upload-screen__final-warning {
+  margin: 0 auto 16px;
+  max-width: 460px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(186, 26, 26, 0.12);
+  color: var(--danger);
+  font-size: 0.84rem;
+  line-height: 1.45;
 }
 
 .upload-screen__subsidiary-zone {
@@ -171,6 +211,56 @@
 .upload-screen__recent-meta {
   margin: 4px 0 0;
   font-size: 0.78rem;
+}
+
+.upload-screen__processed-list {
+  max-height: min(52vh, 460px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 10px;
+}
+
+.upload-screen__processed-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.upload-screen__processed-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-muted) 50%, transparent);
+}
+
+.upload-screen__processed-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.upload-screen__recent-item .activity-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.upload-screen__recent-content {
+  min-width: 0;
+  width: 100%;
+  padding-right: 8px;
+}
+
+.upload-screen__recent-title,
+.upload-screen__recent-file-name {
+  display: block;
+  max-width: calc(100% - 8px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-screen__reset-button {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  padding: 0;
 }
 
 @media (max-width: 1180px) {
