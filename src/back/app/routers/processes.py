@@ -12,7 +12,8 @@ from app.db.models.documento import Documento
 from app.db.models.processo import Processo
 from app.deps import CurrentUser, DbDep
 from app.schemas.process import ProcessoListItem, ProcessoResponse
-from app.services.ingestion.pdf import ingest_pdf
+from app.services.ai.extractor import ProcessMetadata, extract_metadata
+from app.services.ingestion.pdf import IngestedDocument, ingest_pdf
 
 router = APIRouter(prefix="/processes", tags=["processes"])
 logger = get_logger(__name__)
@@ -85,6 +86,25 @@ async def create_processo(
         )
         db.add(doc)
         documentos.append(doc)
+
+    # Extrai features (UF, sub_assunto, valor_da_causa) dos documentos ingeridos
+    ingested_docs = [d for d in documentos if d.raw_text]
+    if ingested_docs:
+        try:
+            combined_text = "\n\n---\n\n".join(
+                f"[{d.doc_type}]\n{d.raw_text}"
+                for d in sorted(ingested_docs, key=lambda x: 0 if x.doc_type == "PETICAO_INICIAL" else 1)
+            )
+            meta: ProcessMetadata = extract_metadata(combined_text)
+            processo.metadata_extraida = {
+                "uf": meta.uf,
+                "sub_assunto": meta.sub_assunto.value if meta.sub_assunto else None,
+                "valor_da_causa": meta.valor_da_causa,
+            }
+            if meta.valor_da_causa and not processo.valor_causa:
+                processo.valor_causa = meta.valor_da_causa
+        except Exception as exc:
+            logger.warning("Extração de metadados falhou: %s", exc)
 
     processo.status = "pendente"
     db.commit()

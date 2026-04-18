@@ -13,6 +13,12 @@ export interface DocumentoResponse {
   parse_errors: Array<{ stage: string; reason: string }> | null;
 }
 
+export interface MetadataExtraida {
+  uf: string | null;
+  sub_assunto: string | null;
+  valor_da_causa: number | null;
+}
+
 export interface ProcessoResponse {
   id: string;
   numero_processo: string;
@@ -21,6 +27,7 @@ export interface ProcessoResponse {
   status: string;
   created_at: string;
   documentos: DocumentoResponse[];
+  metadata_extraida: MetadataExtraida | null;
 }
 
 export interface ProcessoListItem {

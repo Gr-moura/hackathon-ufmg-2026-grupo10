@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Numeric, String, UUID
+from sqlalchemy import DateTime, JSON, Numeric, String, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -16,6 +16,8 @@ class Processo(Base):
     valor_causa: Mapped[float] = mapped_column(Numeric(12, 2), nullable=True)
     # pendente | processando | analisado | concluido
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="pendente")
+    # Features extraídas via OpenAI após upload: uf, sub_assunto, valor_da_causa
+    metadata_extraida: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )

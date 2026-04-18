@@ -29,6 +29,7 @@ class ProcessoResponse(BaseModel):
     status: str
     created_at: datetime
     documentos: list[DocumentoResponse] = []
+    metadata_extraida: dict | None = None
 
     model_config = {"from_attributes": True}
 

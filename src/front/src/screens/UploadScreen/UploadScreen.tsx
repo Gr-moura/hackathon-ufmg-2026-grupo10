@@ -8,8 +8,6 @@ export function UploadScreen() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
-  const [numeroProcesso, setNumeroProcesso] = useState('');
-  const [valorCausa, setValorCausa] = useState('');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,15 +29,13 @@ export function UploadScreen() {
   }
 
   async function handleSubmit() {
-    if (!numeroProcesso.trim()) { setError('Informe o número do processo.'); return; }
     if (files.length === 0) { setError('Adicione ao menos um documento PDF.'); return; }
     setError(null);
     setUploadProgress(30);
 
     try {
       const processo = await upload.mutateAsync({
-        numeroProcesso: numeroProcesso.trim(),
-        valorCausa: valorCausa ? parseFloat(valorCausa) : undefined,
+        numeroProcesso: `PROC-${Date.now()}`,
         files,
       });
       setUploadProgress(60);
@@ -76,31 +72,6 @@ export function UploadScreen() {
         </div>
 
         <div className="metric-card" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div>
-              <label className="field-label" style={{ display: 'block', marginBottom: 4 }}>Process Number *</label>
-              <div className="input-row">
-                <Icon name="tag" className="icon-prefix" />
-                <input
-                  className="text-input" type="text"
-                  placeholder="0801234-56-2024-8-10-0001"
-                  value={numeroProcesso}
-                  onChange={(e) => setNumeroProcesso(e.target.value)}
-                />
-              </div>
-            </div>
-            <div>
-              <label className="field-label" style={{ display: 'block', marginBottom: 4 }}>Valor da Causa (R$)</label>
-              <div className="input-row">
-                <Icon name="payments" className="icon-prefix" />
-                <input
-                  className="text-input" type="number" placeholder="15000"
-                  value={valorCausa} onChange={(e) => setValorCausa(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-
           {uploadProgress !== null && (
             <div>
               <div className="section-heading upload-screen__progress-heading">
@@ -136,7 +107,7 @@ export function UploadScreen() {
           <div className="upload-zone upload-screen__drop-zone">
             <div>
               <div className="upload-icon upload-screen__drop-icon">
-                <Icon name="upload_file" style={{ fontSize: '2.4rem' }} />
+                <Icon name="upload_file" />
               </div>
               <h2 className="section-title-strong upload-screen__drop-title">Drop PDFs here</h2>
               <p className="section-text upload-screen__drop-copy">Petição inicial, procuração, contrato, extrato, dossiê…</p>

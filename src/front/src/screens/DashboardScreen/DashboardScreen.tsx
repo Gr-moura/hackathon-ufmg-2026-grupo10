@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAnalysis, useRegisterDecision, useAnalyzeProcesso, useProcessos } from '../../api/processes';
+import { useAnalysis, useRegisterDecision, useAnalyzeProcesso, useProcessos, useProcesso } from '../../api/processes';
 import { Icon } from '../../modules/ui/Icon';
 import { dashboardDocs, riskIndicators } from '../../data';
 import './DashboardScreen.css';
@@ -18,12 +18,46 @@ function ConfidenceBadge({ value }: { value: number }) {
   );
 }
 
+function MetadataPanel({ meta }: { meta: { uf: string | null; sub_assunto: string | null; valor_da_causa: number | null } | null | undefined }) {
+  const none = <span className="muted">não identificado</span>;
+  return (
+    <div className="panel panel-inner" style={{ marginTop: 16, padding: '1.2rem' }}>
+      <div className="field-label" style={{ marginBottom: 12 }}>Metadados extraídos dos PDFs</div>
+      {!meta ? (
+        <p className="muted">Nenhum metadado extraído.</p>
+      ) : (
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+          <tbody>
+            <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+              <td style={{ padding: '8px 12px', fontWeight: 600 }}>UF</td>
+              <td style={{ padding: '8px 12px' }}>{meta.uf ?? none}</td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+              <td style={{ padding: '8px 12px', fontWeight: 600 }}>Sub-assunto</td>
+              <td style={{ padding: '8px 12px' }}>{meta.sub_assunto ? meta.sub_assunto.toUpperCase() : none}</td>
+            </tr>
+            <tr>
+              <td style={{ padding: '8px 12px', fontWeight: 600 }}>Valor da causa</td>
+              <td style={{ padding: '8px 12px' }}>
+                {meta.valor_da_causa != null
+                  ? meta.valor_da_causa.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                  : none}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}
+
 export function DashboardScreen() {
   const navigate = useNavigate();
   const { processoId } = useParams<{ processoId: string }>();
 
   const { data: analise, isLoading: loadingAnalysis, error: analysisError } = useAnalysis(processoId);
   const { data: processos, isLoading: loadingList } = useProcessos();
+  const { data: processo } = useProcesso(processoId);
   const registerDecision = useRegisterDecision();
   const analyze = useAnalyzeProcesso();
   
@@ -109,13 +143,13 @@ export function DashboardScreen() {
     return (
       <main className="screen dashboard-screen">
         <div className="panel panel-inner" style={{ padding: '2rem', textAlign: 'center' }}>
-          <Icon name="hourglass_empty" style={{ fontSize: '2.5rem', color: 'var(--warning)' }} />
           <p className="lede" style={{ marginTop: 12 }}>Analysis not ready yet.</p>
           <p className="muted">The AI pipeline may still be processing. Trigger it manually or wait.</p>
           <button className="primary-button" style={{ marginTop: 16 }} onClick={handleTriggerAnalysis} disabled={analyze.isPending}>
             {analyze.isPending ? 'Triggering…' : 'Run AI Analysis'}
           </button>
         </div>
+        <MetadataPanel meta={processo?.metadata_extraida} />
       </main>
     );
   }
@@ -258,6 +292,8 @@ export function DashboardScreen() {
           </div>
         </aside>
       </div>
+
+      <MetadataPanel meta={processo?.metadata_extraida} />
 
       <section className="panel panel-inner dashboard-screen__risk" style={{ marginTop: 24 }}>
         <div className="section-heading">
