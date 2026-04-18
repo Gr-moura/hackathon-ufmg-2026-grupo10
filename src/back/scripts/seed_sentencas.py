@@ -1,4 +1,4 @@
-"""Script de seed — popula sentenca_judicial a partir do CSV de 60k sentenças.
+"""Script de seed — popula sentenca_historica a partir do CSV de 60k sentenças.
 
 Uso:
     python scripts/seed_sentencas.py --csv /data/sentencas.csv
@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app.config import get_settings  # noqa: E402
 from app.core.logging import configure_logging, get_logger  # noqa: E402
 from app.db.base import Base  # noqa: E402
-from app.db.models.sentenca_judicial import SentencaJudicial  # noqa: E402
+from app.db.models.sentenca_historica import SentencaHistorica  # noqa: E402
 from app.db.session import SessionLocal, engine  # noqa: E402
 from app.services.ingestion.xlsx import load_sentencas  # noqa: E402
 
@@ -49,9 +49,9 @@ def seed(csv_path: Path, force: bool = False) -> None:
     Base.metadata.create_all(bind=engine)
 
     with SessionLocal() as db:
-        count = db.query(SentencaJudicial).count()
+        count = db.query(SentencaHistorica).count()
         if count > 0 and not force:
-            logger.info("sentenca_judicial já tem %d registros — pulando seed (use --force para reprocessar)", count)
+            logger.info("sentenca_historica já tem %d registros — pulando seed (use --force para reprocessar)", count)
             return
 
         logger.info("Carregando CSV: %s", csv_path)
@@ -59,7 +59,7 @@ def seed(csv_path: Path, force: bool = False) -> None:
         total = len(df)
         logger.info("Total de sentenças a processar: %d", total)
 
-        records: list[SentencaJudicial] = []
+        records: list[SentencaHistorica] = []
         texts_batch: list[str] = []
         rows_batch: list[dict] = []
 
@@ -78,7 +78,7 @@ def seed(csv_path: Path, force: bool = False) -> None:
 
                 for row_dict, embedding in zip(rows_batch, embeddings):
                     records.append(
-                        SentencaJudicial(
+                        SentencaHistorica(
                             numero_caso=row_dict.get("numero_caso"),
                             uf=row_dict.get("uf"),
                             assunto=row_dict.get("assunto"),

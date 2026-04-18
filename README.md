@@ -96,7 +96,7 @@ O serviço `back` executa `alembic upgrade head` antes de iniciar o Uvicorn, e o
 ### 5. (Opcional) Popular dados históricos para demo
 
 ```bash
-# Popula a tabela sentenca_judicial a partir do CSV de 60k sentenças
+# Popula a tabela sentenca_historica a partir do CSV de 60k sentenças
 docker compose exec back python scripts/seed_sentencas.py --csv /data/sentencas.csv
 
 # Popula métricas/decisões de advogados para exibir o dashboard executivo
@@ -197,7 +197,7 @@ hackathon-ufmg-2026-grupo10/
 │   │   │   │   ├── base.py / session.py
 │   │   │   │   └── models/          # processo, documento, analise_ia,
 │   │   │   │                        # decisao_advogado, proposta_acordo,
-│   │   │   │                        # sentenca_judicial
+│   │   │   │                        # sentenca_historica
 │   │   │   ├── routers/             # auth, processes, analysis, metrics
 │   │   │   ├── schemas/             # Pydantic request/response models
 │   │   │   ├── services/

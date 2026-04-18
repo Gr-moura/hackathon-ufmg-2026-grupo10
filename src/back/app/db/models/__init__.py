@@ -4,7 +4,7 @@ from app.db.models.decisao_advogado import DecisaoAdvogado
 from app.db.models.documento import Documento
 from app.db.models.processo import Processo
 from app.db.models.proposta_acordo import PropostaAcordo
-from app.db.models.sentenca_judicial import SentencaJudicial
+from app.db.models.sentenca_historica import SentencaHistorica
 
 __all__ = [
     "AnaliseIA",
@@ -12,5 +12,5 @@ __all__ = [
     "Documento",
     "Processo",
     "PropostaAcordo",
-    "SentencaJudicial",
+    "SentencaHistorica",
 ]

@@ -452,7 +452,7 @@ LOG_LEVEL=INFO
 
 ## 9. Ingestão Inicial dos Dados da Banca (script único)
 
-Um script `src/back/scripts/seed_sentencas.py` precisa rodar **uma vez** para popular `sentenca_judicial` e gerar embeddings das 60k sentenças. Sem isso, o RAG não funciona.
+Um script `src/back/scripts/seed_sentencas.py` precisa rodar **uma vez** para popular `sentenca_historica` e gerar embeddings das 60k sentenças. Sem isso, o RAG não funciona.
 
 - Usa `text-embedding-3-small` em batches de 100.
 - Custo estimado: ~60k × 50 tokens × $0.02/1M = **<$0.10**. Seguro.

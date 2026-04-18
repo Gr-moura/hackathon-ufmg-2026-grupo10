@@ -186,7 +186,7 @@ def test_chunk_preview_nao_trunca_texto_curto():
 # ---------------------------------------------------------------------------
 
 def test_lookup_historical_sem_tabela_retorna_default(db):
-    """Sem SentencaJudicial criada (SQLite test env), deve devolver default sem crashar."""
+    """Sem SentencaHistorica criada (SQLite test env), deve devolver default sem crashar."""
     prob, n = lookup_historical_win_rate(db, uf="MG", sub_assunto="golpe")
     assert prob == 0.30
     assert n == 0

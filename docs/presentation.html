@@ -323,7 +323,7 @@
                 </div>
             </div>
             <p style="margin-top: 36px; text-align: center; font-size: 1.2rem; background: var(--accent-bg); padding: 20px 28px; border-radius: 16px;">
-                Base: 60.000 sentenças judiciais. Nos casos em que a IA recomenda acordo e o valor sugerido é aceito, o custo médio é <strong>R$ 4.200</strong> vs. condenação média de <strong>R$ 12.800</strong> — economia de <strong>R$ 8.600 por caso</strong>.
+                Base: 60.000 sentenças históricas. Nos casos em que a IA recomenda acordo e o valor sugerido é aceito, o custo médio é <strong>R$ 4.200</strong> vs. condenação média de <strong>R$ 12.800</strong> — economia de <strong>R$ 8.600 por caso</strong>.
             </p>
             <div class="slide-num">6 / 9</div>
         </div>
@@ -354,7 +354,7 @@
                             <div class="req-icon">🧬</div>
                             <div class="req-text">
                                 <h3>RN1 — Rede Neural (PyTorch)</h3>
-                                <p>Treinada nas 60k sentenças judiciais. Input: UF (one-hot), sub-assunto, valor da causa (normalizado), 6 flags de presença de documentos. Output: probabilidade de procedência + valor esperado de condenação.</p>
+                                <p>Treinada nas 60k sentenças históricas. Input: UF (one-hot), sub-assunto, valor da causa (normalizado), 6 flags de presença de documentos. Output: probabilidade de procedência + valor esperado de condenação.</p>
                             </div>
                         </div>
                         <div class="req-item blue">
@@ -386,7 +386,7 @@
                         <span style="color: #4ec94e;"># Persistência</span><br>
                         processo, documento, analise_ia,<br>
                         decisao_advogado, proposta_acordo,<br>
-                        sentenca_judicial (60k linhas)
+                        sentenca_historica (60k linhas)
                     </div>
                     <div style="padding: 20px 24px; background: var(--accent-bg); border-radius: 16px; border: 1px solid var(--border);">
                         <p style="font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: var(--text);">Stack de infraestrutura:</p>

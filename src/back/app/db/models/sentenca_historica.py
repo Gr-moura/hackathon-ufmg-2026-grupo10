@@ -7,8 +7,8 @@ from app.db.base import Base
 EMBEDDING_DIM = 1536  # text-embedding-3-small
 
 
-class SentencaJudicial(Base):
-    __tablename__ = "sentenca_judicial"
+class SentencaHistorica(Base):
+    __tablename__ = "sentenca_historica"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     numero_caso: Mapped[str | None] = mapped_column(String(60), nullable=True, index=True)

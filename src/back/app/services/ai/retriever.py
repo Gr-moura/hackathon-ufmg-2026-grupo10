@@ -207,19 +207,19 @@ def _cosine(a: list[float], b: list[float]) -> float:
 def lookup_historical_win_rate(
     db, uf: str | None, sub_assunto: str | None, default: float = 0.30
 ) -> tuple[float, int]:
-    """Retorna (probabilidade_vitoria, n_amostras) da SentencaJudicial.
+    """Retorna (probabilidade_vitoria, n_amostras) da SentencaHistorica.
 
     Puramente SQL (sem embedding). Útil para grounding do classifier e valuator.
     Resiliente: em qualquer falha devolve `(default, 0)`.
     """
     try:
-        from app.db.models.sentenca_judicial import SentencaJudicial
+        from app.db.models.sentenca_historica import SentencaHistorica
 
-        q = db.query(SentencaJudicial)
+        q = db.query(SentencaHistorica)
         if uf:
-            q = q.filter(SentencaJudicial.uf == uf)
+            q = q.filter(SentencaHistorica.uf == uf)
         if sub_assunto:
-            q = q.filter(SentencaJudicial.sub_assunto.ilike(sub_assunto))
+            q = q.filter(SentencaHistorica.sub_assunto.ilike(sub_assunto))
         rows = q.limit(500).all()
         if not rows:
             return default, 0

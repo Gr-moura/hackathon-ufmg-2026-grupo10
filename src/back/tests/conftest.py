@@ -9,7 +9,7 @@ Motivo do SQLite:
   - PostgreSQL-specific types (UUID, JSONB) funcionam em SQLite via SQLAlchemy 2:
     * postgresql.UUID herda de sqltypes.UUID (cross-platform em SQLAlchemy 2)
     * postgresql.JSONB herda de JSON (serialização Python-side é suficiente)
-  - SentencaJudicial (pgvector) NÃO é importada neste path de import → não
+  - SentencaHistorica (pgvector) NÃO é importada neste path de import → não
     aparece em Base.metadata → create_all() funciona.
 
 Execução:
@@ -29,7 +29,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 # Importa os models ANTES de Base.metadata.create_all() para que as tabelas
-# sejam registradas. NÃO importar SentencaJudicial (usa pgvector).
+# sejam registradas. NÃO importar SentencaHistorica (usa pgvector).
 from app.db.models.analise_ia import AnaliseIA  # noqa: F401
 from app.db.models.decisao_advogado import DecisaoAdvogado  # noqa: F401
 from app.db.models.documento import Documento  # noqa: F401
