@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { LoginScreen } from './screens/LoginScreen/LoginScreen';
 import { UploadScreen } from './screens/UploadScreen/UploadScreen';
 import { DashboardScreen } from './screens/DashboardScreen/DashboardScreen';
-import { ProcessListScreen } from './screens/ProcessListScreen/ProcessListScreen';
 import { MonitoringScreen } from './screens/MonitoringScreen/MonitoringScreen';
 import './modules/theme/theme.css';
 import { getThemeClassName, type ThemeName } from './modules/theme/palettes';
@@ -52,7 +51,7 @@ function App() {
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/home" element={renderWorkspace(<Home />)} />
         <Route path="/upload" element={renderWorkspace(<UploadScreen />)} />
-        <Route path="/processes" element={renderWorkspace(<ProcessListScreen />)} />
+        <Route path="/processes" element={renderWorkspace(<DashboardScreen />)} />
         <Route path="/dashboard/:processoId" element={renderWorkspace(<DashboardScreen />)} />
         <Route path="/monitoring" element={renderWorkspace(<MonitoringScreen />)} />
         <Route path="*" element={<Navigate to={isLoginView ? '/login' : '/home'} replace />} />

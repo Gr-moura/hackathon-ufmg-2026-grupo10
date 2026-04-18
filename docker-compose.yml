@@ -21,13 +21,8 @@ services:
     depends_on:
       db: { condition: service_healthy }
     ports: ["8000:8000"]
-    environment:
-      RN1_DIR: /rn1
-      RN1_MODEL_PATH: /rn1_models/litigation_model.pth
     volumes:
       - ./data:/data
-      - ./src/models/RN1:/rn1:ro
-      - ./models:/rn1_models:ro
     command: >
       sh -c "alembic upgrade head &&
              uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"

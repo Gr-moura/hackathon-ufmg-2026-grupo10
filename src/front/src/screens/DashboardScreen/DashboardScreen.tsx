@@ -8,7 +8,6 @@ import {
 } from '../../api/processes';
 import type { AcaoAdvogado, AnaliseIAResponse } from '../../api/types';
 import { Icon } from '../../modules/ui/Icon';
-import type { AcaoAdvogado } from '../../api/types';
 import './DashboardScreen.css';
 
 const BRL = (value: number | null | undefined) =>
@@ -32,7 +31,6 @@ function confidenceTone(confidence: number): 'success' | 'warning' | 'danger' {
 }
 
 export function DashboardScreen() {
-  const { processoId } = useParams<{ processoId: string }>();
   const navigate = useNavigate();
   const { processoId } = useParams<{ processoId: string }>();
 
@@ -117,98 +115,9 @@ export function DashboardScreen() {
   const processo = processoQuery.data;
   const analysisRunning = analyze.isPending || analysisQuery.isLoading;
 
-  const [adjusting, setAdjusting] = useState(false);
-  const [adjustValue, setAdjustValue] = useState('');
-  const [adjustJustif, setAdjustJustif] = useState('');
-  const [decided, setDecided] = useState(false);
-
-  const { data: analysis, isLoading, isError } = useAnalysis(processoId);
-  const { data: processo } = useProcesso(processoId);
-  const registerDecision = useRegisterDecision();
-  const analyze = useAnalyzeProcesso();
-
-  async function handleDecision(acao: AcaoAdvogado, valor?: number, justif?: string) {
-    if (!analysis) return;
-    await registerDecision.mutateAsync({
-      analiseId: analysis.id,
-      acao,
-      valor_advogado: valor ?? null,
-      justificativa: justif ?? null,
-    });
-    setDecided(true);
-    setAdjusting(false);
-  }
-
-  async function handleRunAnalysis() {
-    if (!processoId) return;
-    await analyze.mutateAsync(processoId);
-  }
-
-  // No process selected
-  if (!processoId) {
-    return (
-      <main className="screen dashboard-screen">
-        <div className="panel panel-inner" style={{ padding: 40, textAlign: 'center' }}>
-          <p className="muted">
-            Nenhum processo selecionado.{' '}
-            <button className="ghost-button" onClick={() => navigate('/upload')}>
-              Ir para Evidence Hub
-            </button>
-          </p>
-        </div>
-      </main>
-    );
-  }
-
-  // Loading
-  if (isLoading) {
-    return (
-      <main className="screen dashboard-screen">
-        <div className="panel panel-inner" style={{ padding: 40, textAlign: 'center' }}>
-          <div className="doc-main" style={{ justifyContent: 'center', gap: 12 }}>
-            <div className="mini-icon"><Icon name="auto_awesome" /></div>
-            <p className="section-title-strong">Carregando análise…</p>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  // No analysis yet (404) — offer to run
-  if (isError || !analysis) {
-    return (
-      <main className="screen dashboard-screen">
-        <div className="panel panel-inner" style={{ padding: 40, textAlign: 'center' }}>
-          <p className="section-title-strong" style={{ marginBottom: 12 }}>Análise não encontrada</p>
-          <p className="muted" style={{ marginBottom: 20 }}>
-            O pipeline de IA ainda não foi executado para este processo.
-          </p>
-          <button
-            className="primary-button"
-            onClick={handleRunAnalysis}
-            disabled={analyze.isPending}
-          >
-            {analyze.isPending ? 'Analisando…' : 'Executar análise de IA'}
-          </button>
-          {analyze.isError && (
-            <p style={{ color: 'var(--danger)', marginTop: 12, fontSize: '0.85rem' }}>
-              Falha ao executar análise. Verifique os logs do servidor.
-            </p>
-          )}
-        </div>
-      </main>
-    );
-  }
-
-  const isAcordo = analysis.decisao === 'ACORDO';
-  const confidencePct = Math.round(analysis.confidence * 100);
-  const accentColor = isAcordo ? 'var(--primary)' : '#2e7d32';
-
   return (
     <main className="screen dashboard-screen">
       <div className="hero-grid dashboard-screen__grid">
-
-        {/* ── Painel principal — recomendação ── */}
         <section className="panel panel-inner hero-banner dashboard-screen__hero">
           <div className="title-kicker">AI Analysis Outcome</div>
           <h1 className="headline dashboard-screen__headline">
@@ -294,10 +203,9 @@ export function DashboardScreen() {
           )}
         </section>
 
-        {/* ── Sidebar documentos ── */}
         <aside className="panel panel-inner dashboard-screen__aside">
           <div className="section-heading">
-            <h3 className="section-title">Documentos Analisados</h3>
+            <h3 className="section-title">Analyzed Documents</h3>
             <Icon name="filter_list" />
           </div>
           <div className="doc-list">

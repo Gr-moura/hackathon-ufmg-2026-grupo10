@@ -113,11 +113,6 @@ RUN playwright install --with-deps chromium
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir \
-    torch>=2.1.0 \
-    scikit-learn>=1.3.0 \
-    numpy>=1.24.0 \
-    --extra-index-url https://download.pytorch.org/whl/cpu
 COPY pyproject.toml .
 RUN mkdir -p app && touch app/__init__.py && \
     pip install --no-cache-dir .[dev]

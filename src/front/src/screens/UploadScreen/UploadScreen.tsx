@@ -267,7 +267,10 @@ export function UploadScreen() {
       });
 
       if (processo.metadata_extraida == null) {
-        console.warn('Metadata extraction returned null — pipeline will use fallback values.');
+        setUploadProgress(null);
+        setRequiresNewFileAfterMetadataFailure(true);
+        setFinalSectionAlert('Metadata extraction failed. Please upload more files and try again.');
+        return;
       }
 
       setRequiresNewFileAfterMetadataFailure(false);
