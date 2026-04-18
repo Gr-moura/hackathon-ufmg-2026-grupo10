@@ -318,23 +318,54 @@ class TestIngestionProcesso:
         resp = client.get(f"/processes/{uuid.uuid4()}", headers=_auth(token))
         assert resp.status_code == 404
 
-    def test_pipeline_ia_retorna_501_enquanto_pendente(
+    def test_pipeline_ia_retorna_200_com_analise_persistida(
         self, client: TestClient, db: Session
     ) -> None:
-        """[D3] Confirma que o endpoint de análise retorna 501 (DEV-2 pendente).
-        O hook useAnalyzeProcesso() deve tratar este estado com mensagem ao usuário.
+        """Confirma que o endpoint de análise executa o pipeline determinístico e
+        devolve AnaliseIAResponse persistida.
         """
         processo = Processo(
-            numero_processo="PROC-501-001",
+            numero_processo="PROC-ANALYZE-001",
             advogado_id="00000000-0000-0000-0000-000000000001",
+            valor_causa=10000.0,
             status="pendente",
+            metadata_extraida={"uf": "MG", "sub_assunto": "generico", "valor_da_causa": 10000.0},
         )
         db.add(processo)
         db.commit()
 
         token = get_advogado_token(client)
         resp = client.post(f"/processes/{processo.id}/analyze", headers=_auth(token))
-        assert resp.status_code == 501
+        assert resp.status_code == 200, resp.text
+        body = resp.json()
+        assert body["processo_id"] == str(processo.id)
+        assert body["decisao"] in {"ACORDO", "DEFESA"}
+        assert 0.0 <= body["confidence"] <= 1.0
+        assert isinstance(body["rationale"], str) and body["rationale"]
+        # Proposta só existe quando decisao == ACORDO
+        if body["decisao"] == "ACORDO":
+            assert body["proposta"] is not None
+            assert body["proposta"]["valor_sugerido"] > 0
+
+    def test_pipeline_ia_idempotente(
+        self, client: TestClient, db: Session
+    ) -> None:
+        """Chamar analyze duas vezes no mesmo processo devolve a mesma análise."""
+        processo = Processo(
+            numero_processo="PROC-IDEMP-001",
+            advogado_id="00000000-0000-0000-0000-000000000001",
+            valor_causa=8000.0,
+            status="pendente",
+            metadata_extraida={"uf": "SP", "sub_assunto": "golpe", "valor_da_causa": 8000.0},
+        )
+        db.add(processo)
+        db.commit()
+
+        token = get_advogado_token(client)
+        r1 = client.post(f"/processes/{processo.id}/analyze", headers=_auth(token))
+        r2 = client.post(f"/processes/{processo.id}/analyze", headers=_auth(token))
+        assert r1.status_code == 200 and r2.status_code == 200
+        assert r1.json()["id"] == r2.json()["id"]
 
 
 # ===========================================================================

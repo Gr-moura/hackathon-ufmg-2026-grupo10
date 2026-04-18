@@ -1,4 +1,4 @@
-"""Router de análise — DB layer completo; pipeline IA (DEV-2) chamado via run_pipeline."""
+"""Router de análise — DB layer + pipeline IA (executa run_pipeline)."""
 import uuid
 
 from fastapi import APIRouter, HTTPException, status
@@ -17,6 +17,7 @@ from app.schemas.analysis import (
     PropostaAcordoResponse,
     TrechoChave,
 )
+from app.services.ai.pipeline import run_pipeline
 
 router = APIRouter(tags=["analysis"])
 logger = get_logger(__name__)
@@ -62,13 +63,23 @@ async def analyze_processo(
     if not processo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Processo não encontrado")
 
-    # TODO(DEV-2): importar e chamar run_pipeline quando o pipeline IA estiver pronto
-    # from app.services.ai.pipeline import run_pipeline
-    # analise = await run_pipeline(processo, db)
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Pipeline IA em desenvolvimento pelo DEV-2",
+    try:
+        analise = run_pipeline(processo, db)
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("Pipeline IA falhou para processo %s", processo_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Falha ao executar pipeline IA: {exc}",
+        ) from exc
+
+    # Recarrega com joinedload para devolver a proposta junto
+    analise = (
+        db.query(AnaliseIA)
+        .options(joinedload(AnaliseIA.proposta))
+        .filter(AnaliseIA.id == analise.id)
+        .first()
     )
+    return _to_response(analise)
 
 
 @router.get("/processes/{processo_id}/analysis", response_model=AnaliseIAResponse)

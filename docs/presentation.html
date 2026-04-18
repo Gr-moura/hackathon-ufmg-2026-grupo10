@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnterOS - Apresentação Final Hackathon 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --page-bg: #f7f3ee;
+            --page-bg-2: #f6efe7;
+            --text: #1b1b1b;
+            --text-muted: #705c49;
+            --primary: #904d00;
+            --primary-soft: #ff8c00;
+            --secondary: #00658f;
+            --surface: rgba(255, 255, 255, 0.88);
+            --border: rgba(91, 67, 52, 0.12);
+            --shadow: 0 32px 80px rgba(56, 28, 0, 0.1);
+            --accent-bg: rgba(255, 140, 0, 0.08);
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--page-bg);
+            color: var(--text);
+            overflow: hidden; height: 100%;
+        }
+
+        .slides-container {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
+            height: 100%;
+        }
+
+        .slide {
+            min-width: 100vw; height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            padding: 50px; box-sizing: border-box;
+            background: 
+                radial-gradient(circle at top left, rgba(255, 140, 0, 0.06), transparent 45%),
+                radial-gradient(circle at bottom right, rgba(0, 101, 143, 0.04), transparent 45%),
+                linear-gradient(180deg, var(--page-bg) 0%, var(--page-bg-2) 100%);
+        }
+
+        .slide-content {
+            max-width: 1400px; width: 100%;
+            background: var(--surface);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--border);
+            border-radius: 56px;
+            padding: 80px;
+            box-shadow: var(--shadow);
+            position: relative;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1 { font-size: 5.5rem; margin: 0; letter-spacing: -0.06em; line-height: 0.9; color: var(--primary); font-weight: 900; }
+        h2 { font-size: 3.2rem; margin: 0 0 45px 0; letter-spacing: -0.04em; color: var(--secondary); font-weight: 900; border-left: 8px solid var(--primary-soft); padding-left: 25px; }
+        p { font-size: 1.6rem; color: var(--text-muted); line-height: 1.5; margin: 0; }
+
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 35px; margin-top: 40px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        
+        /* Components */
+        .card { background: var(--accent-bg); padding: 45px; border-radius: 40px; border: 1px solid var(--border); text-align: center; transition: transform 0.3s; }
+        .card:hover { transform: translateY(-10px); }
+        .card-icon { font-size: 3.5rem; margin-bottom: 25px; display: block; }
+        .card-title { font-size: 1.2rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-top: 15px; display: block; }
+        .card-value { font-size: 4.2rem; font-weight: 900; color: var(--primary); display: block; letter-spacing: -0.05em; }
+
+        /* Timeline & Flow */
+        .flow { display: flex; align-items: center; justify-content: space-between; margin-top: 60px; position: relative; }
+        .flow-step { flex: 1; text-align: center; position: relative; z-index: 2; padding: 20px; }
+        .flow-circle { width: 100px; height: 100px; background: var(--primary); color: white; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 25px; font-size: 2.5rem; box-shadow: 0 15px 30px rgba(144, 77, 0, 0.3); }
+        .flow-line { position: absolute; top: 50px; left: 10%; right: 10%; height: 4px; background: var(--border); z-index: 1; }
+
+        /* Roadmap */
+        .roadmap-item { display: flex; align-items: center; gap: 30px; margin-bottom: 30px; padding: 25px; background: rgba(255,255,255,0.5); border-radius: 24px; border-left: 6px solid var(--primary); }
+        .roadmap-week { font-weight: 900; color: var(--primary); min-width: 120px; font-size: 1.4rem; }
+
+        /* Sponsor & Team */
+        .sponsor-tag { position: absolute; top: 50px; right: 80px; text-align: right; }
+        .member-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px 40px; margin-top: 60px; font-weight: 700; color: var(--text-muted); font-size: 1.1rem; }
+
+        /* UI Elements */
+        button { background: var(--primary); color: white; border: none; padding: 18px 32px; border-radius: 22px; cursor: pointer; font-weight: 900; font-size: 1.1rem; box-shadow: 0 15px 30px rgba(0,0,0,0.1); transition: 0.2s; }
+        button:hover { transform: translateY(-3px); filter: brightness(1.1); }
+        .progress-bar { position: fixed; top: 0; left: 0; height: 10px; background: linear-gradient(90deg, var(--primary), var(--primary-soft)); transition: width 0.3s ease; z-index: 2000; }
+
+        .tag-main { display: inline-block; padding: 12px 24px; background: var(--primary); color: white; border-radius: 99px; font-weight: 900; font-size: 0.9rem; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 0.15em; }
+    </style>
+</head>
+<body>
+
+    <div class="progress-bar" id="progress"></div>
+
+    <div class="slides-container" id="container">
+        
+        <!-- SLIDE 1: CAPA -->
+        <section class="slide">
+            <div class="slide-content" style="text-align: center;">
+                <div class="sponsor-tag">
+                    <div style="font-size: 0.8rem; font-weight: 900; letter-spacing: 0.2em; color: var(--primary);">CLIENTE ESTRATÉGICO</div>
+                    <div style="font-size: 2rem; font-weight: 900; color: var(--secondary);">BANCO UFMG</div>
+                </div>
+                <div class="tag-main">Grupo 10 | Apresentação Final</div>
+                <h1>EnterOS</h1>
+                <p style="font-size: 2.4rem; margin-top: 30px; font-weight: 700;">Inteligência Jurídica a Serviço da Estratégia</p>
+                <div class="member-list">
+                    <span>Eduardo Muniz</span>
+                    <span>Gabriel Rabelo</span>
+                    <span>Gabriel Violante</span>
+                    <span>Ian Paleta</span>
+                    <span>Rafael Solino</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: O DESAFIO JURÍDICO -->
+        <section class="slide">
+            <div class="slide-content">
+                <h2>O Gargalo Operacional</h2>
+                <div class="grid-3">
+                    <div class="card">
+                        <span class="card-icon">📂</span>
+                        <span class="card-value">5.000</span>
+                        <span class="card-title">Processos / Mês</span>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon">⚖️</span>
+                        <span class="card-value">Hetero</span>
+                        <span class="card-title">Decisões sem Padrão</span>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon">⏱️</span>
+                        <span class="card-value">Lento</span>
+                        <span class="card-title">Perda de Prazos</span>
+                    </div>
+                </div>
+                <p style="margin-top: 50px; text-align: center; font-weight: 700; color: var(--secondary);">O Banco UFMG perde eficiência e capital por falta de uma régua técnica de acordos.</p>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: POLÍTICA DE ACORDOS INTELIGENTE (REQUISITO 1) -->
+        <section class="slide">
+            <div class="slide-content">
+                <h2>A Nova Régua Técnica</h2>
+                <div class="grid-2">
+                    <div>
+                        <p style="font-size: 1.8rem; color: var(--text); margin-bottom: 30px;">Do subjetivo para o <strong>Baseado em Evidências</strong>:</p>
+                        <ul style="font-size: 1.4rem; color: var(--text-muted); line-height: 2;">
+                            <li>✅ Filtro Automático de Subsídios (Contrato/Extrato).</li>
+                            <li>✅ Cálculo de Probabilidade via Rede Neural (RN1).</li>
+                            <li>✅ Valoração dinâmica via GPT-Analista.</li>
+                        </ul>
+                    </div>
+                    <div style="background: var(--page-bg); padding: 40px; border-radius: 30px; border: 2px solid var(--primary-soft);">
+                        <div style="color: var(--primary); font-family: monospace; font-size: 1.2rem;">
+                            <strong>policy.yaml</strong><br>
+                            confidence_threshold: 0.85<br>
+                            mandatory_docs: [contrato, extrato]<br>
+                            max_settlement: 70% valor_causa
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: IMPACTO FINANCEIRO / ROI (REQUISITO 2) -->
+        <section class="slide">
+            <div class="slide-content">
+                <h2>Potencial de Resultado (ROI)</h2>
+                <div class="grid-3">
+                    <div class="card" style="border-bottom: 8px solid var(--primary);">
+                        <span class="card-value">R$ 2.4M</span>
+                        <span class="card-title">Economia Anual Est.</span>
+                    </div>
+                    <div class="card" style="background: var(--secondary); color: white;">
+                        <span class="card-value" style="color: white;">-85%</span>
+                        <span class="card-title" style="color: rgba(255,255,255,0.8);">Custo de Análise</span>
+                    </div>
+                    <div class="card" style="border-bottom: 8px solid var(--secondary);">
+                        <span class="card-value">+40%</span>
+                        <span class="card-title">Velocidade de Provisão</span>
+                    </div>
+                </div>
+                <p style="margin-top: 50px; text-align: center;">Redução imediata de condenações evitáveis e otimização do fluxo de caixa jurídico.</p>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: EXPERIÊNCIA DO ADVOGADO (REQUISITO 3) -->
+        <section class="slide">
+            <div class="slide-content">
+                <h2>Decision Lab: Jornada do Advogado</h2>
+                <div class="flow">
+                    <div class="flow-line"></div>
+                    <div class="flow-step">
+                        <div class="flow-circle">📤</div>
+                        <strong>Upload</strong><br><small>Simples & Rápido</small>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-circle" style="background: var(--secondary);">🧠</div>
+                        <strong>Análise</strong><br><small>IA Extrai Evidências</small>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-circle" style="background: var(--primary-soft);">⚖️</div>
+                        <strong>Validação</strong><br><small>Human-in-the-Loop</small>
+                    </div>
+                </div>
+                <div style="margin-top: 60px; text-align: center;">
+                    <p>"O advogado não é substituído; ele é <strong>aumentado</strong> por uma IA que lê, cita e fundamenta."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: ARQUITETURA TÉCNICA (REQUISITO 4) -->
+        <section class="slide">
+            <div class="slide-content">
+                <h2>Engenharia de Alta Performance</h2>
+                <div class="grid-2">
+                    <div style="background: var(--accent-bg); padding: 40px; border-radius: 32px;">
+                        <h3 style="color: var(--primary); margin-top: 0;">Cérebro Híbrido</h3>
+                        <p style="font-size: 1.2rem;"><strong>RN1:</strong> Estatística Local (Velocidade).</p>
+                        <p style="font-size: 1.2rem;"><strong>GPT-4o-mini:</strong> Raciocínio (Profundidade).</p>
+                        <p style="font-size: 1.2rem;"><strong>pgvector:</strong> RAG em 60.000 sentenças.</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 5rem;">⚙️</div>
+                        <p style="font-weight: 900; color: var(--secondary);">Stack: FastAPI + Docker + Postgres 16</p>
+                        <p>Totalmente escalável para o volume do Banco UFMG.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: LIMITAÇÕES CONHECIDAS (REQUISITO 5) -->
+        <section class="slide">
+            <div class="slide-content">
+                <h2>Transparência e Segurança</h2>
+                <div class="grid-2">
+                    <div class="card" style="background: rgba(186, 26, 26, 0.05); border-color: #ba1a1a;">
+                        <span class="card-icon" style="color: #ba1a1a;">⚠️</span>
+                        <h3 style="color: #ba1a1a;">Qualidade Documental</h3>
+                        <p style="font-size: 1.1rem;">PDFs ilegíveis ou fotos de baixa resolução prejudicam a precisão do OCR.</p>
+                    </div>
+                    <div class="card" style="background: rgba(168, 90, 0, 0.05); border-color: #a85a00;">
+                        <span class="card-icon" style="color: #a85a00;">🔍</span>
+                        <h3 style="color: #a85a00;">Alta Complexidade</h3>
+                        <p style="font-size: 1.1rem;">Fraudes inéditas ou teses jurídicas de exceção exigem análise humana sênior.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: PRÓXIMOS PASSOS (REQUISITO 6) -->
+        <section class="slide">
+            <div class="slide-content">
+                <h2>Roadmap: Próximos 30 Dias</h2>
+                <div class="roadmap-item">
+                    <div class="roadmap-week">Sem 1-2</div>
+                    <div><strong>Conexão Tribunais:</strong> Integração API para Peticionamento Automático de Acordos.</div>
+                </div>
+                <div class="roadmap-item" style="border-color: var(--secondary);">
+                    <div class="roadmap-week" style="color: var(--secondary);">Sem 3</div>
+                    <div><strong>Expansão de Tema:</strong> IA adaptada para Cartão de Crédito e Consignado.</div>
+                </div>
+                <div class="roadmap-item" style="border-color: var(--primary-soft);">
+                    <div class="roadmap-week" style="color: var(--primary-soft);">Sem 4</div>
+                    <div><strong>Fine-tuning:</strong> Refinamento da RN1 com os dados colhidos em produção.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: CONCLUSÃO -->
+        <section class="slide">
+            <div class="slide-content" style="text-align: center;">
+                <h1 style="font-size: 6rem;">EnterOS</h1>
+                <p style="font-size: 2.8rem; color: var(--primary-soft); font-weight: 900; margin-top: 20px;">Dados que viram Justiça e Rentabilidade.</p>
+                <div style="margin-top: 100px;">
+                    <div class="stat-label" style="font-size: 1.2rem;">GRUPO 10 - BANCO UFMG</div>
+                    <button onclick="currentSlide=0; updateSlide()" style="margin-top: 30px;">Reiniciar Apresentação</button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('container');
+        const progress = document.getElementById('progress');
+
+        function updateSlide() {
+            container.style.transform = `translateX(-${currentSlide * 100}vw)`;
+            progress.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        updateSlide();
+    </script>
+</body>
+</html>
