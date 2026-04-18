@@ -1,6 +1,6 @@
-# EnterOS Front
+# EanterOS Front
 
-React + Vite front end that reproduces the EnterOS mockup in four navigable screens: login, file hub, decision lab, and bank monitoring.
+React + Vite front end that reproduces the EanterOS mockup in four navigable screens: login, file hub, decision lab, and bank monitoring.
 
 ## Run
 

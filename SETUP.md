@@ -1,4 +1,4 @@
-# SETUP.md — EnterOS: Política de Acordos Inteligente
+# SETUP.md — EanterOS: Política de Acordos Inteligente
 
 > Guia completo para rodar o projeto do zero. Tempo estimado: **10–15 minutos** (excluindo build da imagem Docker na primeira vez, ~5–8 min).
 

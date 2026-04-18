@@ -6,7 +6,7 @@ Coloque aqui os arquivos fornecidos pela organização do hackathon.
 
 ```
 data/
-├── sentencas.csv          # 60.000 sentenças judiciais
+├── sentencas.csv          # 60.000 sentenças históricas
 ├── subsidios/             # documentos de subsídio por processo
 │   └── <id_processo>/
 │       ├── contrato.*

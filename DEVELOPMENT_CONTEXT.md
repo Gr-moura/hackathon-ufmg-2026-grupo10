@@ -1,7 +1,7 @@
 # DEVELOPMENT_CONTEXT.md
 
 > **Single Source of Truth — Hackathon UFMG 2026 / Enter AI Challenge**
-> Projeto: **EnterOS — Política de Acordos Inteligente (Banco UFMG)**
+> Projeto: **EanterOS — Política de Acordos Inteligente (Banco UFMG)**
 > Versão: `1.0.0` · Status: `MASTER PLAN — LOCKED`
 > Audiência: humanos do squad **e** agentes de IA (Claude, Gemini, Cursor, Copilot, etc.)
 > Janela de execução: **17/04 (briefing) → 18/04 04:00 (submissão)** — 22 a 24h úteis.
@@ -56,7 +56,7 @@ Hoje a decisão é heterogênea, lenta, e o banco não consegue medir aderência
 ```mermaid
 flowchart LR
     subgraph Client["🖥️ Cliente (Browser)"]
-        FE["Frontend React 19 + Vite + TS<br/>(EnterOS UI já iniciado)"]
+        FE["Frontend React 19 + Vite + TS<br/>(EanterOS UI já iniciado)"]
     end
 
     subgraph API["⚙️ Backend — FastAPI"]

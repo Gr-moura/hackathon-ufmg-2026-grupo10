@@ -1,5 +1,5 @@
 """
-Suíte de testes de integração — Caminho Dourado do EnterOS.
+Suíte de testes de integração — Caminho Dourado do EanterOS.
 
 Valida que o Frontend (TanStack Query hooks) e o Backend (FastAPI routers)
 estão usando o mesmo contrato de dados definido em §6 do DEVELOPMENT_CONTEXT.md.

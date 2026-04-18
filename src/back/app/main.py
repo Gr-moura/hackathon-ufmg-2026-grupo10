@@ -19,7 +19,7 @@ try:
 except Exception as e:
     logger.error("Erro ao criar tabelas: %s", str(e))
 
-app = FastAPI(title="EnterOS API", version="0.1.0", docs_url="/docs", redoc_url="/redoc")
+app = FastAPI(title="EanterOS API", version="0.1.0", docs_url="/docs", redoc_url="/redoc")
 
 app.add_middleware(
     CORSMiddleware,

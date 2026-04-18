@@ -1,5 +1,5 @@
 """
-Fixtures compartilhadas para a suíte de integração do EnterOS.
+Fixtures compartilhadas para a suíte de integração do EanterOS.
 
 Estratégia de banco de dados:
   - SQLite in-memory por padrão (sem dependências externas, roda localmente).

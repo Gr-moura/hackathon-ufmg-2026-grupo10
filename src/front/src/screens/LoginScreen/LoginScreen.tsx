@@ -55,7 +55,7 @@ export function LoginScreen() {
       <div className="login-shell login-screen__shell">
         <div className="login-screen__hero">
           <h1 className="headline login-screen__headline">
-            EnterOS <span className="accent">Operações Jurídicas Corporativas</span>
+            EanterOS <span className="accent">Operações Jurídicas Corporativas</span>
           </h1>
           <p className="lede login-screen__lede">
             Acesse a área de trabalho do caso, carregue autos e subsídios e analise a recomendação da IA antes de tomar a decisão.
