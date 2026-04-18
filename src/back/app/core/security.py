@@ -36,11 +36,11 @@ MOCK_PASSWORDS = {
 
 
 def verify_password(email: str, plain: str) -> bool:
-    return MOCK_PASSWORDS.get(email) == plain
+    return MOCK_PASSWORDS.get(email.lower()) == plain
 
 
 def authenticate_user(email: str, password: str) -> dict[str, Any] | None:
-    user = MOCK_USERS.get(email)
+    user = MOCK_USERS.get(email.lower())
     if not user or not verify_password(email, password):
         return None
     return user

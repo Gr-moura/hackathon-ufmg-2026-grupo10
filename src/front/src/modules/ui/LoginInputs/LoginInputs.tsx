@@ -5,11 +5,12 @@ import './LoginInputs.css';
 
 interface LoginInputsProps {
     inputType: "Login" | "Password";
-    setValueFunction?: (value: string) => void;
+    placeholder?: string;
+    value: string;
+    onChange: (value: string) => void;
 }
 
-export const LoginInputs = ({ inputType, setValueFunction }: LoginInputsProps) => {
-    const [inputValue, setInputValue] = useState("");
+export const LoginInputs = ({ inputType, placeholder, value, onChange }: LoginInputsProps) => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     return (
@@ -28,15 +29,15 @@ export const LoginInputs = ({ inputType, setValueFunction }: LoginInputsProps) =
                 {inputType === "Login" && (<>
                     <Icon name="person" className="icon-prefix" />
                     <input 
-                        className="text-input" type="text" placeholder="username@bankufmg.com" 
-                        value={inputValue} onChange={(e) => {setInputValue(e.target.value); if(setValueFunction) setValueFunction(e.target.value)}} 
+                        className="text-input" type="text" placeholder={placeholder || "username@banco.com"}
+                        value={value} onChange={(e) => onChange(e.target.value)} 
                     />
                 </>)}
                 {inputType === "Password" && (<>
                     <Icon name="lock" className="icon-prefix" />
                     <input 
-                        id="password" className="text-input" type={isPasswordVisible ? "text" : "password"} placeholder="••••••••••••" 
-                        value={inputValue} onChange={(e) => {setInputValue(e.target.value); if(setValueFunction) setValueFunction(e.target.value)}}
+                        id="password" className="text-input" type={isPasswordVisible ? "text" : "password"} placeholder={placeholder || "••••••••••••"} 
+                        value={value} onChange={(e) => onChange(e.target.value)}
                     />
                     <button 
                         type="button" className="icon-button icon-suffix" aria-label="Toggle password visibility"

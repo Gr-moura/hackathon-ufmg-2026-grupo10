@@ -214,7 +214,6 @@ input[type="checkbox"] {
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  background: var(--active_button_bg);
   color: var(--primary);
 }
 
