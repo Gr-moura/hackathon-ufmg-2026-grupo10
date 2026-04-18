@@ -26,8 +26,8 @@ Hoje a decisão é heterogênea, lenta, e o banco não consegue medir aderência
 
 | # | Requisito | Onde mora na nossa solução |
 |---|---|---|
-| 1 | Regra de decisão (acordo vs defesa) | Pipeline IA — Estágio 2 (Classificação) |
-| 2 | Sugestão de valor de acordo | Pipeline IA — Estágio 3 (Valoração) |
+| 1 | Regra de decisão (acordo vs defesa) | Pipeline Híbrido (Estágio 2: RN1 + Estágio 3: GPT Analista) |
+| 2 | Sugestão de valor de acordo | Pipeline IA — Estágio 4 (GPT Acordo) |
 | 3 | Acesso prático do advogado à recomendação | Frontend — `Decision Lab` (já existe) + HITL |
 | 4 | Monitoramento de **aderência** (advogado seguiu?) | Frontend — `Monitoring` + tabela `decisao_advogado` |
 | 5 | Monitoramento de **efetividade** (política funciona?) | Frontend — `Monitoring` + agregação sobre `resultado_final` |
@@ -101,147 +101,75 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    A[📥 Upload<br/>Autos + Subsídios] --> B[Estágio 0<br/>Ingestão & Normalização]
-    B --> C[Estágio 1<br/>Extração de Variáveis<br/>via LLM estruturado]
-    C --> D[Estágio 2<br/>Classificação<br/>Acordo vs Defesa<br/>+ Confidence Score]
-    D --> E{Confidence<br/>≥ 0.75?}
-    E -->|Sim e Acordo| F[Estágio 3<br/>Valoração<br/>RAG + Política + LLM]
-    E -->|Sim e Defesa| G[Sugestão: Defesa<br/>+ teses recomendadas]
-    E -->|Não| H[🚨 Flag para revisão<br/>humana prioritária]
-    F --> I[Estágio 4<br/>Human-in-the-Loop<br/>Advogado decide]
-    G --> I
-    H --> I
-    I --> J[Estágio 5<br/>Telemetria<br/>aderência + efetividade]
-    J --> K[📊 Monitoring]
+    A[📥 Upload<br/>Autos + Subsídios] --> B[Estágio 0<br/>Ingestão & Mapeamento<br/>Determinístico de Subsídios]
+    B --> C[Estágio 1<br/>Extração de Variáveis<br/>GPT: UF, Valor, Sub-assunto]
+    C --> D[Estágio 2<br/>RN1: Predição de Desfecho<br/>Probabilidade de Derrota]
+    D --> E{Probabilidade<br/>> X%?}
+    E -->|Sim| F[Estágio 4<br/>Valoração<br/>GPT Acordo]
+    E -->|Não / Ambíguo| G[Estágio 3<br/>Análise de Defesa<br/>GPT Analista]
+    G --> H{Confiança<br/>Alta?}
+    H -->|Sim| I[Sugestão: DEFESA<br/>+ Teses & Rationale]
+    H -->|Não| F
+    F --> J[Estágio 5<br/>Human-in-the-Loop<br/>Advogado decide]
+    I --> J
+    J --> K[Estágio 6<br/>Telemetria]
+    K --> L[📊 Monitoring]
 ```
 
 ---
 
 ## 4. Pipeline de IA — Detalhamento (o coração do projeto)
 
-### 4.1 Estágio 0 — Ingestão & Normalização
+### 4.1 Estágio 0 — Ingestão & Verificação Determinística
 
-**Responsabilidade**: transformar bytes brutos em texto + estrutura previsível.
+**Responsabilidade**: transformar bytes brutos em texto e verificar a presença de documentos obrigatórios via código (não via LLM).
 
-- PDFs nativos → `pdfplumber` (texto + tabelas).
-- PDFs escaneados → **OCR via `pytesseract`** (fallback automático quando `len(text.strip()) < 200` por página).
-- XLSX → `openpyxl` + `pandas`.
-- Saída: objeto `IngestedDocument` (ver §6) com `raw_text`, `tables[]`, `page_count`, `doc_type` inferido por nome de arquivo + heurística de cabeçalho.
+- **Ingestão**: PDFs/XLSX processados via `pdfplumber` / `openpyxl`.
+- **Mapeamento Determinístico**: O sistema verifica obrigatoriamente a presença de: `CONTRATO`, `EXTRATO`, `COMPROVANTE_CREDITO`, `DOSSIE`, `DEMONSTRATIVO_DIVIDA`, `LAUDO_REFERENCIADO`.
+- Saída: Objeto `IngestedDocument` + Dicionário de Booleanos dos subsídios.
 
-**Tipos de documento esperados** (use como `enum`):
-`PETICAO_INICIAL`, `PROCURACAO`, `CONTRATO`, `EXTRATO`, `COMPROVANTE_CREDITO`, `DOSSIE`, `DEMONSTRATIVO_DIVIDA`, `LAUDO_REFERENCIADO`, `OUTRO`.
+### 4.2 Estágio 1 — Extração de Variáveis (LLM)
 
-### 4.2 Estágio 1 — Extração de Variáveis (Structured Output)
-
-Usar **`response_format={"type": "json_schema", ...}`** da OpenAI para extrair, em uma única chamada por processo:
+Usar **GPT-4o-mini** para extrair as variáveis contextuais do processo:
 
 ```json
 {
+  "uf": "MG",
   "valor_causa": 15000.00,
-  "data_alegado_emprestimo": "2023-03-15",
-  "valor_alegado_emprestimo": 8500.00,
-  "canal_alegado": "telefone | agencia | app | desconhecido",
-  "subsidios_presentes": {
-    "contrato": true,
-    "extrato": true,
-    "comprovante_credito": false,
-    "dossie": true,
-    "demonstrativo_divida": true,
-    "laudo_referenciado": false
-  },
-  "sinais_fraude": ["assinatura_divergente", "ip_suspeito"],
-  "sinais_legitimidade": ["pagamentos_no_extrato", "uso_do_credito_visivel"],
-  "ja_houve_pagamento_parcial": true,
+  "sub_assunto": "golpe | generico",
   "trechos_chave": [
-    {"doc": "peticao_inicial", "page": 3, "quote": "..."},
-    {"doc": "extrato", "page": 1, "quote": "..."}
+    {"doc": "peticao_inicial", "page": 3, "quote": "..."}
   ]
 }
 ```
 
-> **Crítico**: o array `trechos_chave` é o que sustenta a explicabilidade no UI. Sem isso, a recomendação vira caixa-preta e perde pontos em "uso de IA".
+### 4.3 Estágio 2 — Probabilidade RN1 (Rede Neural)
 
-### 4.3 Estágio 2 — Classificação (Acordo vs Defesa)
+A Rede Neural **RN1** recebe como entrada os dados extraídos e os subsídios mapeados:
+- **Inputs**: UF, Valor da Causa, Sub-assunto, Booleanos dos 6 Subsídios.
+- **Lógica**: A RN estima a probabilidade de "Não Êxito" (derrota do banco).
+- **Threshold (X)**: Se `probabilidade_derrota > X%`, o caso é considerado perdido e segue para o Estágio 4 (Acordo). Se for menor, segue para o Estágio 3 (Análise de Ambiguidade).
 
-**Estratégia de Prompt** — três blocos:
+### 4.4 Estágio 3 — Análise de Defesa (GPT Analista)
 
-1. **System**: papel ("você é analista jurídico sênior do Banco UFMG…"), política do banco em forma de regras explícitas (ver `docs/policy.md`), instrução de raciocinar em voz alta antes de decidir.
-2. **User (RAG-aumentado)**: variáveis extraídas no Estágio 1 + **top-K (K=5) sentenças similares** recuperadas do CSV de 60k via embedding cosine.
-3. **Output (JSON Schema enforced)**:
+Para casos ambíguos, um GPT atua como analista jurídico sênior:
+- **Tarefa**: Identificar pontos positivos da defesa e falhas/pontos fracos.
+- **Output**:
+  - Lista de pontos fortes/fracos.
+  - **Score de Confiança**: Se for baixo, recomenda-se Acordo. Se for alto, recomenda-se Defesa com fundamentação.
 
-```json
-{
-  "decisao": "ACORDO" | "DEFESA",
-  "confidence": 0.0..1.0,
-  "rationale": "string em pt-BR, ≤ 4 frases",
-  "fatores_pro_acordo": ["..."],
-  "fatores_pro_defesa": ["..."],
-  "casos_similares_ids": ["UF-2024-...", "..."]
-}
-```
+### 4.5 Estágio 4 — Valoração (GPT Acordo)
 
-**Confidence Score** — calibração:
+Casos destinados ao acordo são processados pelo **GPT Acordo**:
+- **Tarefa**: Estimar um valor de acordo justo e fundamentado.
+- **Contexto**: Recebe os documentos, as variáveis do caso e os pontos positivos/negativos levantados no estágio anterior.
+- **Output**:
+  - `valor_acordo`: Valor sugerido em BRL.
+  - `justificativa`: O "porquê" do valor (fundamentação técnica).
 
-- `≥ 0.85` → recomendação verde, advogado pode aprovar com 1 clique.
-- `0.60 – 0.85` → amarelo, exige justificativa textual do advogado se ele divergir.
-- `< 0.60` → vermelho, **bloqueia auto-aprovação**, exige revisão de supervisor (campo `requires_supervisor=true` na resposta).
+### 4.6 Estágio 5 — Human-in-the-Loop (HITL)
 
-A `confidence` deve ser calculada como `softmax-like` baseado em:
-
-- Auto-avaliação do LLM (peça explicitamente `confidence` no schema).
-- Concordância dos top-5 casos similares (% que tiveram mesma decisão real).
-- Completude documental (subsídios faltando = penaliza).
-
-### 4.4 Estágio 3 — Valoração
-
-**NUNCA deixe o LLM cuspir um número solto.** O valor sugerido é uma função composta:
-
-```
-valor_sugerido = clip(
-    valor_base_estatistico  ×  modulador_llm,
-    min = piso_politica,
-    max = teto_politica
-)
-```
-
-- **`valor_base_estatistico`**: mediana de `valor_condenacao` dos top-K casos similares **com resultado de procedência** no CSV de sentenças.
-- **`modulador_llm`**: número entre 0.7 e 1.3 que o LLM retorna olhando para sinais específicos do caso (fraude evidente puxa para cima, pagamentos no extrato puxam para baixo).
-- **`piso_politica` / `teto_politica`**: definidos em `policy.yaml` (ex.: piso = 30% do valor da causa, teto = 70%).
-
-**Resposta da API**:
-
-```json
-{
-  "valor_sugerido": 5400.00,
-  "intervalo_confianca": {"min": 4200.00, "max": 7100.00},
-  "valor_base_estatistico": 5800.00,
-  "modulador_llm": 0.93,
-  "n_casos_similares": 47,
-  "custo_estimado_litigar": 12800.00,
-  "economia_esperada_se_acordo": 7400.00
-}
-```
-
-### 4.5 Estágio 4 — Human-in-the-Loop (HITL)
-
-UI no `Decision Lab` (já existe — só conectar) com 3 ações:
-
-| Ação do advogado | O que registra | Impacto em métricas |
-|---|---|---|
-| `ACEITAR` | `decisao_advogado = decisao_ia`, `valor_advogado = valor_sugerido` | Aderência +1 |
-| `AJUSTAR` | `decisao_advogado = ACORDO`, `valor_advogado = X` (campo livre, com `delta_pct`) + `justificativa` (obrigatória se delta > 15%) | Aderência parcial; flag se delta > 30% |
-| `RECUSAR / DEFESA` | `decisao_advogado = DEFESA`, `motivo` (obrigatório) | Aderência -1 |
-
-Toda ação grava em `decisao_advogado` (ver §6). Sem essa tabela, **não há monitoramento de aderência**.
-
-### 4.6 Estágio 5 — Telemetria & Métricas
-
-Agregações servidas pelo endpoint `GET /dashboard/metrics`:
-
-- **Aderência global** = `count(decisao_advogado == decisao_ia) / count(total)`.
-- **Aderência por advogado** = mesma fórmula agrupada.
-- **Efetividade** = `sum(valor_condenacao_real - valor_acordo_pago)` para casos fechados, comparando com cenário contrafactual (média de condenação dos similares).
-- **Drift de confiança** = série temporal de `avg(confidence)` por dia.
+Interface `Decision Lab` onde o advogado valida ou ajusta a recomendação. Toda ação alimenta a tabela `decisao_advogado` para cálculo de aderência.
 
 ---
 
@@ -354,7 +282,6 @@ erDiagram
     PROCESSO ||--o| ANALISE_IA : "tem 1"
     ANALISE_IA ||--o| PROPOSTA_ACORDO : "pode ter"
     ANALISE_IA ||--o| DECISAO_ADVOGADO : "é validada por"
-    SENTENCA_HISTORICA }o..o{ ANALISE_IA : "informa via RAG"
 
     PROCESSO {
         uuid id PK
@@ -380,18 +307,16 @@ erDiagram
         float confidence
         text rationale
         jsonb variaveis_extraidas
-        jsonb casos_similares
+        jsonb pontos_fortes_fracos
         timestamptz created_at
     }
     PROPOSTA_ACORDO {
         uuid id PK
         uuid analise_id FK
         decimal valor_sugerido
-        decimal valor_base_estatistico
-        float modulador_llm
+        text justificativa
         decimal intervalo_min
         decimal intervalo_max
-        decimal custo_estimado_litigar
     }
     DECISAO_ADVOGADO {
         uuid id PK
@@ -401,14 +326,6 @@ erDiagram
         text justificativa
         string advogado_id
         timestamptz created_at
-    }
-    SENTENCA_HISTORICA {
-        bigint id PK
-        string numero_caso
-        decimal valor_causa
-        string resultado
-        decimal valor_condenacao
-        vector embedding
     }
 ```
 
@@ -438,19 +355,17 @@ class AnaliseIAResponse(BaseModel):
     decisao: Decisao
     confidence: float = Field(..., ge=0.0, le=1.0)
     rationale: str
-    fatores_pro_acordo: list[str]
-    fatores_pro_defesa: list[str]
+    pontos_fortes: list[str]
+    pontos_fracos: list[str]
     requires_supervisor: bool
     proposta: "PropostaAcordoResponse | None" = None
     trechos_chave: list[TrechoChave]
 
 class PropostaAcordoResponse(BaseModel):
     valor_sugerido: Decimal
+    justificativa: str
     intervalo_min: Decimal
     intervalo_max: Decimal
-    custo_estimado_litigar: Decimal
-    economia_esperada: Decimal
-    n_casos_similares: int
 ```
 
 ---
