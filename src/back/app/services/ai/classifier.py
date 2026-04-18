@@ -1,173 +1,116 @@
-"""Classificador LLM ACORDO vs DEFESA (gpt-4o-mini via Structured Outputs).
-
-Usa o mesmo modelo `openai_model_reasoning` do extractor e do valuator.
-Recebe metadados + fatores documentais + top-k casos similares e devolve:
-  - `decisao`: ACORDO ou DEFESA
-  - `confidence`: [0, 1] — confiança do modelo
-  - `rationale`: justificativa curta (<= 400 chars)
-  - `fatores`: lista de fatores extras pró-acordo ou pró-defesa identificados
-
-Comportamento offline:
-  - Sem `OPENAI_API_KEY` ou em falha de chamada, devolve `None`; o pipeline
-    cai no heurístico determinístico `_decisao()`.
-"""
+"""Classificador RN1 — wrapper do modelo PyTorch para predição de derrota do banco."""
 from __future__ import annotations
 
+import logging
+import os
+import sys
+from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, Field
+logger = logging.getLogger(__name__)
 
-from app.config import get_settings
-from app.core.logging import get_logger
-
-logger = get_logger(__name__)
-
-
-_SYSTEM_PROMPT = """\
-Você é um classificador jurídico do Banco UFMG.
-
-Dado o contexto de um processo civil de não-reconhecimento de contratação de
-empréstimo, decida se a estratégia deve ser:
-  - "ACORDO": propor acordo; o banco tende a perder em juízo OU a economia de
-    litigar é compensatória.
-  - "DEFESA": contestar em juízo; há documentação robusta e histórico favorável.
-
-Regras de negócio:
-  1. Se a petição alega "golpe" (fraude por terceiro) e faltam Contrato ou
-     Comprovante de Crédito, tende a ACORDO.
-  2. Se a documentação do banco está completa (Contrato + Extrato + Comprovante
-     + Dossiê) e o histórico de casos similares mostra taxa alta de êxito em
-     juízo, tende a DEFESA.
-  3. Se `probabilidade_vitoria_historica` < 0.25, tende a ACORDO.
-  4. Nunca recomende DEFESA quando houver `red flags` graves (assinatura
-     evidentemente falsificada, ausência total de comprovante de crédito).
-  5. Sua `confidence` deve refletir a robustez da evidência — menor quando há
-     poucos casos similares ou sub_assunto não classificado.
-
-Responda **apenas** no formato estruturado solicitado.
-"""
+# Configurable via env — avaliação lazy para não explodir em Docker (parents[5] não existe)
+def _resolve_rn1_dir() -> Path:
+    if p := os.environ.get("RN1_DIR"):
+        return Path(p)
+    here = Path(__file__).resolve()
+    # Repositório local: src/back/app/services/ai/classifier.py → 5 níveis até a raiz
+    try:
+        return here.parents[5] / "src" / "models" / "RN1"
+    except IndexError:
+        return Path("/rn1")
 
 
-class ClassifierInput(BaseModel):
-    uf: str | None = None
-    sub_assunto: str | None = None
-    valor_causa: float | None = None
-    doc_types_presentes: list[str] = Field(default_factory=list)
-    fatores_pro_acordo: list[str] = Field(default_factory=list)
-    fatores_pro_defesa: list[str] = Field(default_factory=list)
-    penalty_documental: float = 0.0
-    probabilidade_vitoria_historica: float = 0.30
-    casos_similares: list[dict[str, Any]] = Field(default_factory=list)
-    trechos_peticao: list[str] = Field(default_factory=list)
+def _resolve_model_path() -> Path:
+    if p := os.environ.get("RN1_MODEL_PATH"):
+        return Path(p)
+    here = Path(__file__).resolve()
+    try:
+        return here.parents[5] / "models" / "litigation_model.pth"
+    except IndexError:
+        return Path("/rn1_models/litigation_model.pth")
 
 
-class ClassifierOutput(BaseModel):
-    decisao: str = Field(..., description="ACORDO ou DEFESA")
-    confidence: float = Field(..., ge=0.0, le=1.0)
-    rationale: str = Field(..., max_length=600)
-    fatores_extra_pro_acordo: list[str] = Field(default_factory=list)
-    fatores_extra_pro_defesa: list[str] = Field(default_factory=list)
+_RN1_DIR = _resolve_rn1_dir()
+_MODEL_PATH = _resolve_model_path()
+
+# Mapping from DB doc_type → RN1 feature name
+_DOC_TYPE_TO_FEATURE: dict[str, str] = {
+    "CONTRATO": "Contrato",
+    "EXTRATO": "Extrato",
+    "COMPROVANTE_CREDITO": "Comprovante de crédito",
+    "DOSSIE": "Dossiê",
+    "DEMONSTRATIVO_DIVIDA": "Demonstrativo de evolução da dívida",
+    "LAUDO_REFERENCIADO": "Laudo referenciado",
+}
+
+_predictor = None
 
 
-def _format_casos(casos: list[dict[str, Any]]) -> str:
-    if not casos:
-        return "Nenhum caso similar encontrado na base."
-    lines = []
-    for i, c in enumerate(casos, 1):
-        # Formato agregado (estatísticas por UF/sub_assunto)
-        if "n_amostras" in c or "win_rate" in c:
-            lines.append(
-                f"{i}. n_amostras={c.get('n_amostras', 0)} "
-                f"| UF={c.get('uf', '?')} "
-                f"| sub_assunto={c.get('sub_assunto', '?')} "
-                f"| win_rate={c.get('win_rate', 'N/A')}"
-            )
-        else:
-            # Formato per-caso
-            lines.append(
-                f"{i}. nº={c.get('numero_caso', 'N/A')} | UF={c.get('uf', '?')} "
-                f"| sub_assunto={c.get('sub_assunto', '?')} "
-                f"| resultado={c.get('resultado_macro', '?')}/"
-                f"{c.get('resultado_micro', '?')} "
-                f"| valor_causa={c.get('valor_causa', 'N/A')} "
-                f"| condenação={c.get('valor_condenacao', 'N/A')}"
-            )
-    return "\n".join(lines)
+def _load_predictor():
+    """Lazy-load do singleton LitigationPredictor do módulo RN1."""
+    global _predictor
+    if _predictor is not None:
+        return _predictor
 
-
-def _format_user_message(inp: ClassifierInput) -> str:
-    valor_line = (
-        f"Valor da causa: R$ {inp.valor_causa:.2f}"
-        if inp.valor_causa
-        else "Valor da causa: não identificado"
-    )
-    docs_line = ", ".join(inp.doc_types_presentes) or "nenhum"
-    pro_acordo = ", ".join(inp.fatores_pro_acordo) or "nenhum"
-    pro_defesa = ", ".join(inp.fatores_pro_defesa) or "nenhum"
-    trechos_block = (
-        "\n".join(f"> {t}" for t in inp.trechos_peticao[:3])
-        if inp.trechos_peticao
-        else "(indisponível)"
-    )
-
-    return (
-        "--- METADADOS ---\n"
-        f"UF: {inp.uf or 'N/A'}\n"
-        f"Sub-assunto: {inp.sub_assunto or 'N/A'}\n"
-        f"{valor_line}\n"
-        f"Documentos presentes: {docs_line}\n"
-        f"Penalidade documental acumulada: {inp.penalty_documental:+.2f}\n"
-        f"Probabilidade de vitória (histórico): {inp.probabilidade_vitoria_historica:.0%}\n\n"
-        "--- FATORES IDENTIFICADOS ---\n"
-        f"Pró-acordo: {pro_acordo}\n"
-        f"Pró-defesa: {pro_defesa}\n\n"
-        f"--- CASOS SIMILARES (top-{len(inp.casos_similares)}) ---\n"
-        f"{_format_casos(inp.casos_similares)}\n\n"
-        "--- TRECHOS DA PETIÇÃO INICIAL ---\n"
-        f"{trechos_block}"
-    )
-
-
-def classify(inp: ClassifierInput, model: str | None = None) -> ClassifierOutput | None:
-    """Classifica a decisão estratégica via LLM. Devolve `None` em falha/sem key."""
-    settings = get_settings()
-    if not settings.openai_api_key:
-        logger.info("Classifier: sem OPENAI_API_KEY — fallback para heurística")
-        return None
+    for p in (str(_RN1_DIR), str(_RN1_DIR / "training")):
+        if p not in sys.path:
+            sys.path.insert(0, p)
 
     try:
-        from openai import OpenAI
+        import torch
+        from RN1 import LitigationPredictor  # type: ignore[import]
 
-        client = OpenAI(api_key=settings.openai_api_key)
-        chosen_model = model or settings.openai_model_reasoning
+        _predictor = LitigationPredictor()
 
-        response = client.beta.chat.completions.parse(
-            model=chosen_model,
-            messages=[
-                {"role": "system", "content": _SYSTEM_PROMPT},
-                {"role": "user", "content": _format_user_message(inp)},
-            ],
-            response_format=ClassifierOutput,
-            temperature=0.0,
-        )
-        parsed = response.choices[0].message.parsed
-        if parsed is None:
-            logger.warning("Classifier: resposta estruturada vazia")
-            return None
-        # Normaliza a decisão para ACORDO/DEFESA mesmo se o modelo variar caixa
-        parsed.decisao = parsed.decisao.strip().upper()
-        if parsed.decisao not in ("ACORDO", "DEFESA"):
-            logger.warning(
-                "Classifier: decisao inválida '%s' — descartando saída",
-                parsed.decisao,
+        # Sobrescreve os pesos com o caminho configurado via env (necessário no Docker)
+        if _MODEL_PATH.exists():
+            _predictor.model.load_state_dict(
+                torch.load(str(_MODEL_PATH), map_location="cpu", weights_only=True)
             )
-            return None
-        logger.info(
-            "Classifier concluído: %s | confidence=%.2f",
-            parsed.decisao,
-            parsed.confidence,
-        )
-        return parsed
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("Classifier falhou (%s) — fallback para heurística", exc)
-        return None
+            _predictor.model.eval()
+            logger.info("Pesos RN1 carregados de %s", _MODEL_PATH)
+        else:
+            logger.warning("Pesos RN1 não encontrados em %s — usando pesos internos", _MODEL_PATH)
+
+        logger.info("Modelo RN1 inicializado de %s", _RN1_DIR)
+    except Exception as exc:
+        logger.error("Falha ao inicializar RN1: %s", exc)
+        raise RuntimeError(f"Falha ao inicializar classificador RN1: {exc}") from exc
+
+    return _predictor
+
+
+def predict_outcome(processo_metadata: dict[str, Any]) -> float:
+    """Prediz a probabilidade de derrota do banco para um processo.
+
+    Args:
+        processo_metadata: Dict com UF, Sub-assunto, Valor da causa e flags de subsídios.
+
+    Returns:
+        Float em [0, 1] representando probabilidade de derrota (Não Êxito).
+    """
+    predictor = _load_predictor()
+    result = predictor.predict(processo_metadata)
+    return float(result["probabilidade_perda"])
+
+
+def build_case_data(
+    uf: str | None,
+    sub_assunto: str | None,
+    valor_causa: float | None,
+    doc_types: list[str],
+) -> dict[str, Any]:
+    """Monta o dict de entrada do RN1 a partir dos metadados do processo."""
+    doc_flags = {feat: 0.0 for feat in _DOC_TYPE_TO_FEATURE.values()}
+    for dt in doc_types:
+        feat = _DOC_TYPE_TO_FEATURE.get(dt)
+        if feat:
+            doc_flags[feat] = 1.0
+
+    return {
+        "UF": uf or "SP",
+        "Sub-assunto": sub_assunto or "generico",
+        "Valor da causa": float(valor_causa or 0.0),
+        **doc_flags,
+    }

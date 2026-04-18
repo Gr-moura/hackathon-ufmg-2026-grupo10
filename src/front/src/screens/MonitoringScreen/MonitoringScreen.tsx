@@ -55,7 +55,7 @@ export function MonitoringScreen() {
               <h3 className="section-title-strong monitoring-screen__feed-title">AI Recommendations</h3>
               <p className="section-text monitoring-screen__feed-subtitle">Real-time policy alignment feed</p>
             </div>
-            <button type="button" className="ghost-button" onClick={() => navigate('/dashboard')}>
+            <button type="button" className="ghost-button" onClick={() => navigate('/processes')}>
               Open Decision Lab
             </button>
           </div>

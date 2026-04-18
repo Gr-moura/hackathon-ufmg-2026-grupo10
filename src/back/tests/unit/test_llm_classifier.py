@@ -1,4 +1,4 @@
-"""Unit tests para `app.services.ai.classifier`.
+"""Unit tests para `app.services.ai.llm_classifier`.
 
 Cobre:
   - Fallback para None quando não há OPENAI_API_KEY
@@ -11,7 +11,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from app.services.ai.classifier import (
+from app.services.ai.llm_classifier import (
     ClassifierInput,
     ClassifierOutput,
     _format_user_message,
@@ -36,14 +36,14 @@ def _mk_input(**overrides) -> ClassifierInput:
     return ClassifierInput(**defaults)
 
 
-@patch("app.services.ai.classifier.get_settings")
+@patch("app.services.ai.llm_classifier.get_settings")
 def test_classifier_sem_api_key_retorna_none(mock_settings):
     mock_settings.return_value.openai_api_key = None
     out = classify(_mk_input())
     assert out is None
 
 
-@patch("app.services.ai.classifier.get_settings")
+@patch("app.services.ai.llm_classifier.get_settings")
 def test_classifier_falha_sdk_retorna_none(mock_settings):
     mock_settings.return_value.openai_api_key = "sk-fake"
     mock_settings.return_value.openai_model_reasoning = "gpt-4o-mini"
@@ -53,7 +53,7 @@ def test_classifier_falha_sdk_retorna_none(mock_settings):
     assert out is None
 
 
-@patch("app.services.ai.classifier.get_settings")
+@patch("app.services.ai.llm_classifier.get_settings")
 def test_classifier_normaliza_decisao_lowercase(mock_settings):
     mock_settings.return_value.openai_api_key = "sk-fake"
     mock_settings.return_value.openai_model_reasoning = "gpt-4o-mini"
@@ -79,7 +79,7 @@ def test_classifier_normaliza_decisao_lowercase(mock_settings):
     assert out.decisao == "ACORDO"
 
 
-@patch("app.services.ai.classifier.get_settings")
+@patch("app.services.ai.llm_classifier.get_settings")
 def test_classifier_rejeita_decisao_invalida(mock_settings):
     mock_settings.return_value.openai_api_key = "sk-fake"
     mock_settings.return_value.openai_model_reasoning = "gpt-4o-mini"

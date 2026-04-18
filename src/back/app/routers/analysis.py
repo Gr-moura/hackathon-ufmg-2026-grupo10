@@ -59,26 +59,26 @@ async def analyze_processo(
     db: DbDep,
     current_user: CurrentUser,
 ) -> AnaliseIAResponse:
+    import asyncio
+
+    from app.services.ai.pipeline import run_pipeline
+
     processo = db.get(Processo, processo_id)
     if not processo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Processo não encontrado")
 
     try:
-        analise = run_pipeline(processo, db)
-    except Exception as exc:  # noqa: BLE001
-        logger.exception("Pipeline IA falhou para processo %s", processo_id)
+        analise = await asyncio.to_thread(run_pipeline, processo_id, db)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except Exception as exc:
+        logger.error("Erro no pipeline IA: processo=%s erro=%s", processo_id, exc)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Falha ao executar pipeline IA: {exc}",
+            detail=f"Falha no pipeline de IA: {exc}",
         ) from exc
 
-    # Recarrega com joinedload para devolver a proposta junto
-    analise = (
-        db.query(AnaliseIA)
-        .options(joinedload(AnaliseIA.proposta))
-        .filter(AnaliseIA.id == analise.id)
-        .first()
-    )
+
     return _to_response(analise)
 
 

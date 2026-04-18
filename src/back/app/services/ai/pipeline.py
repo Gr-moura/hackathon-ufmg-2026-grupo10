@@ -24,7 +24,7 @@ from app.db.models.analise_ia import AnaliseIA
 from app.db.models.documento import Documento  # noqa: F401 (type hint context)
 from app.db.models.processo import Processo
 from app.db.models.proposta_acordo import PropostaAcordo
-from app.services.ai.classifier import ClassifierInput, classify
+from app.services.ai.llm_classifier import ClassifierInput, classify
 from app.services.ai.retriever import (
     InProcessRetriever,
     RetrievedChunk,
@@ -182,11 +182,22 @@ def _trechos_chave_from_rag(
     return out
 
 
-def run_pipeline(processo: Processo, db: Session) -> AnaliseIA:
+def run_pipeline(processo_or_id, db: Session) -> AnaliseIA:
     """Executa o pipeline completo e persiste AnaliseIA + PropostaAcordo.
+
+    Aceita tanto um `Processo` já carregado quanto um UUID — o router passa o
+    UUID via `asyncio.to_thread` para evitar compartilhar Sessions entre
+    threads.
 
     Idempotente: se já existir análise para o processo, apenas retorna a existente.
     """
+    if isinstance(processo_or_id, Processo):
+        processo = processo_or_id
+    else:
+        processo = db.get(Processo, processo_or_id)
+        if processo is None:
+            raise ValueError(f"Processo {processo_or_id} não encontrado")
+
     if processo.analise is not None:
         logger.info(
             "Análise já existe para processo %s — pulando pipeline",

@@ -1,0 +1,21 @@
+@import '../../modules/theme/theme.css';
+
+.process-list-screen__header {
+  margin-bottom: 0;
+}
+
+.process-list-screen__title {
+  font-size: 1.4rem;
+}
+
+.process-list-screen__subtitle {
+  margin-top: 4px;
+}
+
+.process-list-screen__list-panel {
+  margin-top: 16px;
+}
+
+.process-list-screen__table {
+  width: 100%;
+}
