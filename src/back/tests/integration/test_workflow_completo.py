@@ -397,8 +397,9 @@ class TestIngestionProcesso:
         # trechos_chave deve conter pelo menos 1 entrada baseada nos docs
         assert body["trechos_chave"], "RAG deveria ter populado trechos_chave"
         assert all("doc" in t and "quote" in t for t in body["trechos_chave"])
-        # rationale deve mencionar o método RAG usado
-        assert "RAG=" in body["rationale"]
+        # rationale deve existir e ser não-trivial (não é mais marcador técnico;
+        # a telemetria RAG vive em variaveis_extraidas.rag_method/rag_n_chunks)
+        assert isinstance(body["rationale"], str) and len(body["rationale"]) > 50
         # Trechos chave devem vir dos docs fornecidos (doc_type esperado)
         doc_types = {t["doc"] for t in body["trechos_chave"]}
         assert doc_types <= {"PETICAO_INICIAL", "CONTRATO"}

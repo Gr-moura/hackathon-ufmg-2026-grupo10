@@ -149,6 +149,127 @@ def _trechos_chave_from_rag(
     return out
 
 
+# Rótulos humanos para os tipos de documento (espelha o front-end).
+_DOC_TYPE_LABELS: dict[str, str] = {
+    "CONTRATO": "contrato",
+    "EXTRATO": "extrato bancário",
+    "COMPROVANTE_CREDITO": "comprovante de crédito",
+    "DOSSIE": "dossiê de verificação",
+    "DEMONSTRATIVO_DIVIDA": "demonstrativo da evolução da dívida",
+    "LAUDO_REFERENCIADO": "laudo referenciado",
+}
+
+# Rótulos humanos para sub-assuntos (mapeia o enum SubAssunto).
+_SUB_ASSUNTO_LABELS: dict[str, str] = {
+    "golpe": "alegação de golpe ou fraude",
+    "nao_reconhece": "contratação não reconhecida pelo consumidor",
+    "revisional": "revisional contratual",
+    "generico": "genérico",
+}
+
+
+def _format_brl(value: float | None) -> str:
+    """Formata valor em R$ no padrão brasileiro (R$ 20.000,00)."""
+    if value is None:
+        return "não identificado"
+    formatted = f"{value:,.2f}"
+    # swap separators: 20,000.00 -> 20.000,00
+    return "R$ " + formatted.replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def _humanize_docs(doc_types: list[str]) -> str:
+    uniq: list[str] = []
+    seen: set[str] = set()
+    for dt in doc_types:
+        if dt in ("PETICAO_INICIAL", "PROCURACAO", "OUTRO"):
+            continue
+        if dt in seen:
+            continue
+        seen.add(dt)
+        uniq.append(_DOC_TYPE_LABELS.get(dt, dt.replace("_", " ").lower()))
+    if not uniq:
+        return "nenhum subsídio documental"
+    if len(uniq) == 1:
+        return uniq[0]
+    return ", ".join(uniq[:-1]) + " e " + uniq[-1]
+
+
+def _polish_rationale_llm(
+    decisao: str,
+    prob_derrota: float,
+    threshold: float,
+    meta: ProcessMetadata,
+    doc_types: list[str],
+    clf_rationale: str | None,
+) -> str | None:
+    """Gera um rationale polido em português jurídico via GPT.
+
+    Retorna None em qualquer falha — caller cai no template determinístico.
+    """
+    try:
+        from openai import OpenAI
+
+        from app.core.config import get_settings
+
+        settings = get_settings()
+        if not settings.openai_api_key:
+            return None
+        client = OpenAI(api_key=settings.openai_api_key)
+
+        uf = meta.uf or "não identificada"
+        sub_key = meta.sub_assunto.value if meta.sub_assunto else "generico"
+        sub_label = _SUB_ASSUNTO_LABELS.get(sub_key, sub_key.replace("_", " "))
+        docs_human = _humanize_docs(doc_types)
+
+        system = (
+            "Você é um advogado sênior redigindo o texto da recomendação para "
+            "a equipe jurídica do banco. Escreva em português brasileiro claro "
+            "e profissional, sem jargão de machine learning. Nunca use os "
+            "termos 'RN1', 'RAG', 'embedding', 'chunk', 'classifier' ou nomes "
+            "de modelos de IA. Use dois parágrafos curtos."
+        )
+        user = (
+            "Escreva dois parágrafos.\n\n"
+            "Parágrafo 1 (avaliação quantitativa): descreva a probabilidade "
+            "estatística de derrota, o contexto do processo (UF, natureza da "
+            "demanda, valor), e os subsídios documentais disponíveis.\n\n"
+            "Parágrafo 2 (recomendação): justifique por que a recomendação é "
+            f"{decisao}, conectando os subsídios disponíveis com a estratégia "
+            "sugerida. Se houver análise qualitativa pré-existente, incorpore "
+            "seus fundamentos com naturalidade (sem citar 'IA' ou 'classificador').\n\n"
+            "Dados factuais:\n"
+            f"- Recomendação: {decisao}\n"
+            f"- Probabilidade de derrota: {prob_derrota:.1%} "
+            f"(limiar de risco: {threshold:.0%})\n"
+            f"- UF: {uf}\n"
+            f"- Natureza da demanda: {sub_label}\n"
+            f"- Valor da causa: {_format_brl(meta.valor_da_causa)}\n"
+            f"- Subsídios do banco: {docs_human}\n"
+            + (
+                f"- Análise qualitativa pré-existente: {clf_rationale}\n"
+                if clf_rationale
+                else ""
+            )
+        )
+
+        resp = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            temperature=0.2,
+            max_tokens=500,
+        )
+        text = (resp.choices[0].message.content or "").strip()
+        if not text:
+            return None
+        return text
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Polish rationale (LLM) falhou — fallback ao template: %s", exc)
+        return None
+
+
 def _build_rationale(
     decisao: str,
     prob_derrota: float,
@@ -159,26 +280,41 @@ def _build_rationale(
     n_chunks: int,
     clf_rationale: str | None,
 ) -> str:
-    uf = meta.uf or "N/A"
-    valor = f"R$ {meta.valor_da_causa:,.2f}" if meta.valor_da_causa else "N/A"
-    sub = meta.sub_assunto or "generico"
-    docs_presentes = [
-        dt for dt in doc_types if dt not in ("PETICAO_INICIAL", "PROCURACAO", "OUTRO")
-    ]
+    # Tentativa 1 — rationale polido pelo LLM, em linguagem jurídica natural.
+    polished = _polish_rationale_llm(
+        decisao=decisao,
+        prob_derrota=prob_derrota,
+        threshold=threshold,
+        meta=meta,
+        doc_types=doc_types,
+        clf_rationale=clf_rationale,
+    )
+    if polished:
+        return polished
 
+    # Fallback determinístico — usado quando a OpenAI está indisponível.
+    # Esse texto também é consumido pelos testes de integração como marcador.
+    uf = meta.uf or "não identificada"
+    valor = _format_brl(meta.valor_da_causa)
+    sub_key = meta.sub_assunto.value if meta.sub_assunto else "generico"
+    sub_label = _SUB_ASSUNTO_LABELS.get(sub_key, sub_key.replace("_", " "))
+    docs_human = _humanize_docs(doc_types)
+
+    sinalizacao = "acima" if prob_derrota > threshold else "abaixo"
     head = (
-        f"RN1 estimou probabilidade de derrota em {prob_derrota:.1%}, "
-        f"{'acima' if prob_derrota > threshold else 'abaixo'} do limiar de {threshold:.0%}. "
-        f"Processo: UF={uf}, sub-assunto={sub}, valor={valor}. "
-        f"Subsídios presentes: {', '.join(docs_presentes) or 'nenhum'}. "
-        f"RAG={rag_method} com {n_chunks} chunks dos PDFs do processo."
+        f"A análise quantitativa estima probabilidade de derrota em "
+        f"{prob_derrota:.1%}, {sinalizacao} do limiar de {threshold:.0%}. "
+        f"Processo na {uf}, de natureza {sub_label}, com valor da causa "
+        f"{valor}. Subsídios do banco disponíveis: {docs_human}. "
+        f"Retrieval documental processou {n_chunks} trechos dos PDFs "
+        f"(método {rag_method})."
     )
     if clf_rationale:
-        head += f"\n\nClassifier LLM: {clf_rationale}"
+        head += f"\n\n{clf_rationale}"
     tail = (
-        " Recomenda-se proposta de acordo para mitigar risco."
+        " Recomenda-se proposta de acordo para mitigar o risco de condenação."
         if decisao == "ACORDO"
-        else " Base documental suficiente para sustentar defesa judicial."
+        else " Base documental suficiente para sustentar a defesa judicial."
     )
     return head + tail
 
