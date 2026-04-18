@@ -2,50 +2,50 @@
 // Business data is served by the API (src/api/).
 
 export const dashboardDocs = [
-  { name: 'Contract', icon: 'description', status: 'Validated' },
-  { name: 'Statement', icon: 'note_stack', status: 'Validated' },
-  { name: 'Dossier', icon: 'folder_shared', status: 'Missing', tone: 'danger' },
-  { name: 'Debt Evolution', icon: 'analytics', status: 'Inconsistent', tone: 'warning' },
+  { name: 'Contrato', icon: 'description', status: 'Validado' },
+  { name: 'Extrato', icon: 'note_stack', status: 'Validado' },
+  { name: 'Dossiê', icon: 'folder_shared', status: 'Ausente', tone: 'danger' },
+  { name: 'Evolução da dívida', icon: 'analytics', status: 'Inconsistente', tone: 'warning' },
 ];
 
 export const riskIndicators = [
-  { label: 'Document Authenticity Score', value: 94, color: 'primary' },
-  { label: 'Winning Probability', value: 35, color: 'danger' },
-  { label: 'Estimated Savings', value: 12, color: 'tertiary' },
+  { label: 'Autenticidade documental', value: 94, color: 'primary' },
+  { label: 'Probabilidade de êxito', value: 35, color: 'danger' },
+  { label: 'Economia estimada', value: 12, color: 'tertiary' },
 ];
 
-// Skeleton cards shown while metrics are loading for the first time
+// Cards esqueleto mostrados enquanto as métricas carregam pela primeira vez
 export const statsCards = [
-  { label: 'Total Decisions', value: '—', note: '— processes', icon: 'task_alt' },
-  { label: 'Settlement Adherence', value: '—', note: 'On Target', icon: 'verified_user' },
-  { label: 'Total Savings', value: '—', note: 'vs litigation cost', icon: 'payments' },
-  { label: 'High-Risk Cases', value: '—', note: 'Confidence < 60%', icon: 'warning' },
+  { label: 'Total de Decisões', value: '—', note: '— processos', icon: 'task_alt' },
+  { label: 'Aderência a Acordos', value: '—', note: 'Dentro da meta', icon: 'verified_user' },
+  { label: 'Economia Total', value: '—', note: 'vs. custo de litígio', icon: 'payments' },
+  { label: 'Casos de Alto Risco', value: '—', note: 'Confiança < 60%', icon: 'warning' },
 ];
 
 
 
 export const uploadCategories = [
   {
-    title: 'Contract',
+    title: 'Contrato',
     icon: 'contract',
-    description: 'Original signed agreements and terms of service documentation.',
-    tag: 'Required',
+    description: 'Contratos assinados originais e termos de serviço.',
+    tag: 'Obrigatório',
   },
   {
-    title: 'Bank Statement',
+    title: 'Extrato bancário',
     icon: 'receipt_long',
-    description: 'Transactional history including deposits and relevant debits.',
-    tag: 'Automated',
+    description: 'Histórico de transações com depósitos e débitos relevantes.',
+    tag: 'Automatizado',
   },
   {
-    title: 'Credit Voucher',
+    title: 'Comprovante de crédito',
     icon: 'payments',
-    description: 'Proof of credit release or settlement payment confirmations.',
-    tag: 'Verification',
+    description: 'Comprovante de liberação de crédito ou confirmação de quitação.',
+    tag: 'Verificação',
   },
 ];
 
 export const recentFiles = [
-  { name: 'Autos_2024_Case_89.pdf', time: 'Processed 12m ago', size: '4.2 MB', status: 'Validated' },
-  { name: 'Bank_Subsidy_Voucher_X.pdf', time: 'Processed 45m ago', size: '1.1 MB', status: 'Missing', tone: 'danger' },
+  { name: 'Autos_2024_Caso_89.pdf', time: 'Processado há 12min', size: '4.2 MB', status: 'Validado' },
+  { name: 'Comprovante_Banco_X.pdf', time: 'Processado há 45min', size: '1.1 MB', status: 'Ausente', tone: 'danger' },
 ];

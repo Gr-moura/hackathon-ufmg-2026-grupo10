@@ -55,10 +55,10 @@ export function LoginScreen() {
       <div className="login-shell login-screen__shell">
         <div className="login-screen__hero">
           <h1 className="headline login-screen__headline">
-            EnterOS <span className="accent">Enterprise Legal Operations</span>
+            EnterOS <span className="accent">Operações Jurídicas Corporativas</span>
           </h1>
           <p className="lede login-screen__lede">
-            Access the case workspace, load autos and subsídios, then inspect the AI recommendation before making a decision.
+            Acesse a área de trabalho do caso, carregue autos e subsídios e analise a recomendação da IA antes de tomar a decisão.
             <br />
             <small style={{ opacity: 0.7 }}>Demo: advogado@banco.com / advogado123 | banco@banco.com / banco123</small>
           </p>
@@ -78,15 +78,15 @@ export function LoginScreen() {
               onClick={handleAccess}
               disabled={login.isPending}
             >
-              {login.isPending ? 'Authenticating…' : 'Access System'}
+              {login.isPending ? 'Autenticando…' : 'Acessar sistema'}
             </button>
           </div>
 
           <div className="login-screen__footer">
             <p className="muted login-screen__footer-text">
-              Internal enterprise access only.{' '}
+              Acesso corporativo interno.{' '}
               <a href="/" onClick={(e) => e.preventDefault()} style={{ color: 'var(--secondary)', fontWeight: 700 }}>
-                Request access credentials
+                Solicitar credenciais
               </a>
             </p>
           </div>

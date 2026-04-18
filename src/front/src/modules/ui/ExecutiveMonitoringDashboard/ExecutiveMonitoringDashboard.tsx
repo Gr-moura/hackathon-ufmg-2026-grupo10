@@ -11,46 +11,46 @@ export function ExecutiveMonitoringDashboard({ className = '' }: { className?: s
   const statsCards = metrics
     ? [
         {
-          label: 'Total Decisions',
+          label: 'Total de Decisões',
           value: String(metrics.total_decisoes),
           note: `${metrics.total_processos} processos`,
           icon: 'task_alt',
         },
         {
-          label: 'Settlement Adherence',
+          label: 'Aderência a Acordos',
           value: metrics.aderencia_global != null ? PCT(metrics.aderencia_global) : '—',
-          note: 'On Target',
+          note: 'Dentro da meta',
           icon: 'verified_user',
         },
         {
-          label: 'Total Savings',
+          label: 'Economia Total',
           value: metrics.economia_total != null ? BRL(metrics.economia_total) : '—',
-          note: 'vs litigation cost',
+          note: 'vs. custo de litígio',
           icon: 'payments',
         },
         {
-          label: 'High-Risk Cases',
+          label: 'Casos de Alto Risco',
           value: String(metrics.casos_alto_risco),
-          note: 'Confidence < 60%',
+          note: 'Confiança < 60%',
           icon: 'warning',
         },
       ]
     : [
-        { label: 'Total Decisions', value: '—', note: '— processos', icon: 'task_alt' },
-        { label: 'Settlement Adherence', value: '—', note: 'On Target', icon: 'verified_user' },
-        { label: 'Total Savings', value: '—', note: 'vs litigation cost', icon: 'payments' },
-        { label: 'High-Risk Cases', value: '—', note: 'Confidence < 60%', icon: 'warning' },
+        { label: 'Total de Decisões', value: '—', note: '— processos', icon: 'task_alt' },
+        { label: 'Aderência a Acordos', value: '—', note: 'Dentro da meta', icon: 'verified_user' },
+        { label: 'Economia Total', value: '—', note: 'vs. custo de litígio', icon: 'payments' },
+        { label: 'Casos de Alto Risco', value: '—', note: 'Confiança < 60%', icon: 'warning' },
       ];
 
   return (
     <section className={`panel panel-inner hero-banner executive-monitoring-dashboard ${className}`.trim()}>
-      <div className="title-kicker executive-monitoring-dashboard__kicker">Executive Monitoring</div>
+      <div className="title-kicker executive-monitoring-dashboard__kicker">Monitoramento Executivo</div>
       <h2 className="headline executive-monitoring-dashboard__headline">
-        Bank UFMG <span className="accent">Operations</span>
+        Banco UFMG <span className="accent">Operações</span>
       </h2>
       <p className="lede executive-monitoring-dashboard__lede">
-        Track adherence, savings, and high-risk cases in one control surface. Use the data to assess
-        whether the agreement policy is working.
+        Acompanhe aderência, economia e casos de alto risco em um único painel. Use os dados para avaliar
+        se a política de acordos está funcionando.
       </p>
 
       <div className="split-grid executive-monitoring-dashboard__stats">

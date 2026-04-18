@@ -24,10 +24,10 @@ export function SideBar({
   }, []);
 
   const navigationItems = [
-    { label: 'Home', icon: 'home', path: '/home' },
-    userRole === 'Lawyer' && { label: 'Evidence Hub', icon: 'upload_file', path: '/upload' },
-    userRole === 'Lawyer' && { label: 'Decision Lab', icon: 'gavel', path: '/processes' },
-    userRole === 'Bank Administrator' && { label: 'Monitoring', icon: 'analytics', path: '/monitoring' },
+    { label: 'Início', icon: 'home', path: '/home' },
+    userRole === 'Lawyer' && { label: 'Central de Evidências', icon: 'upload_file', path: '/upload' },
+    userRole === 'Lawyer' && { label: 'Mesa de Decisão', icon: 'gavel', path: '/processes' },
+    userRole === 'Bank Administrator' && { label: 'Monitoramento', icon: 'analytics', path: '/monitoring' },
   ];
 
 
@@ -39,9 +39,9 @@ export function SideBar({
         </div>
         <div>
           <h1 className="brand-name">EnterOS</h1>
-          <p className="brand-subtitle">Legal Division</p>
+          <p className="brand-subtitle">Diretoria Jurídica</p>
         </div>
-        <button type="button" className="sidebar-theme-button" onClick={onToggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
+        <button type="button" className="sidebar-theme-button" onClick={onToggleTheme} aria-label={`Alternar para modo ${theme === 'light' ? 'escuro' : 'claro'}`}>
           <Icon name={theme === 'light' ? 'dark_mode' : 'light_mode'} />
         </button>
       </div>
@@ -60,7 +60,7 @@ export function SideBar({
       </ul>
 
       <button className="sidebar-cta" type="button" onClick={() => onNavigate(userRole === 'Lawyer' ? '/upload' : '/monitoring')}>
-        {userRole === 'Lawyer' ? 'New Analysis' : 'View Performance'}
+        {userRole === 'Lawyer' ? 'Nova análise' : 'Ver desempenho'}
       </button>
     </aside>
   );

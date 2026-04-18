@@ -7,13 +7,13 @@ import './UploadScreen.css';
 type UploadStatus = 'pending' | 'selected' | 'uploaded' | 'missing';
 
 const REQUIRED_DOCUMENTS = [
-  { name: 'Case File (Autos)', allowMultiple: true },
-  { name: 'Contract', allowMultiple: false },
-  { name: 'Statement (Extrato)', allowMultiple: false },
-  { name: 'Credit Proof (Comprovante)', allowMultiple: false },
-  { name: 'Dossier', allowMultiple: false },
-  { name: 'Debt Evolution Statement', allowMultiple: false },
-  { name: 'Referenced Report', allowMultiple: false },
+  { name: 'Autos do processo', allowMultiple: true },
+  { name: 'Contrato', allowMultiple: false },
+  { name: 'Extrato bancário', allowMultiple: false },
+  { name: 'Comprovante de crédito', allowMultiple: false },
+  { name: 'Dossiê', allowMultiple: false },
+  { name: 'Demonstrativo de evolução da dívida', allowMultiple: false },
+  { name: 'Laudo referenciado', allowMultiple: false },
 ] as const;
 
 type UploadListItem = {
@@ -50,8 +50,8 @@ function truncateFileName(fileName: string): string {
 }
 
 function getDocumentFileLabel(item: UploadListItem): string {
-  if (item.files.length === 0) return 'No file attached';
-  if (item.allowMultiple && item.files.length > 1) return `${item.files.length} files uploaded`;
+  if (item.files.length === 0) return 'Nenhum arquivo anexado';
+  if (item.allowMultiple && item.files.length > 1) return `${item.files.length} arquivos enviados`;
   return truncateFileName(item.files[0].name);
 }
 
@@ -65,10 +65,10 @@ function isPdfFile(file: File): boolean {
 }
 
 function getStatusLabel(status: UploadStatus): string {
-  if (status === 'uploaded') return 'Uploaded';
-  if (status === 'selected') return 'Uploaded';
-  if (status === 'missing') return 'Missing';
-  return 'Waiting';
+  if (status === 'uploaded') return 'Enviado';
+  if (status === 'selected') return 'Selecionado';
+  if (status === 'missing') return 'Ausente';
+  return 'Aguardando';
 }
 
 function getStatusTone(status: UploadStatus): '' | 'success' | 'warning' | 'danger' {
@@ -80,18 +80,18 @@ function getStatusTone(status: UploadStatus): '' | 'success' | 'warning' | 'dang
 
 function getStatusDescription(item: UploadListItem): string {
   if (item.status === 'uploaded') {
-    return `Uploaded in ${formatUploadDuration(item.uploadDurationMs)} at ${item.uploadedAt}`;
+    return `Enviado em ${formatUploadDuration(item.uploadDurationMs)} às ${item.uploadedAt}`;
   }
 
   if (item.status === 'selected') {
-    return 'Document selected and queued for the final upload.';
+    return 'Documento selecionado e pronto para envio.';
   }
 
   if (item.status === 'missing') {
-    return 'Document marked as missing.';
+    return 'Documento marcado como ausente.';
   }
 
-  return 'Waiting for this document upload.';
+  return 'Aguardando o envio deste documento.';
 }
 
 export function UploadScreen() {
@@ -114,7 +114,7 @@ export function UploadScreen() {
   const hasUploadableSelection = files.some((item) => item.status === 'selected' && item.files.length > 0);
   const canSubmitFinalUpload = hasUploadableSelection && !requiresNewFileAfterMetadataFailure;
   const allDocumentsMissing = !currentDocument && files.every((item) => item.status === 'missing');
-  const finalSectionMessage = finalSectionAlert ?? (allDocumentsMissing ? 'At least one PDF is required for upload and analysis.' : null);
+  const finalSectionMessage = finalSectionAlert ?? (allDocumentsMissing ? 'É necessário pelo menos um PDF para envio e análise.' : null);
 
   function handleStartNewAnalysis() {
     setFiles(createInitialUploadList());
@@ -160,18 +160,18 @@ export function UploadScreen() {
     e.preventDefault();
 
     if (!currentDocument) {
-      setError('All documents have already been classified.');
+      setError('Todos os documentos já foram classificados.');
       return;
     }
 
     const pdfFiles = getPdfFiles(Array.from(e.dataTransfer.files));
     if (pdfFiles.length === 0) {
-      setError('Upload only one PDF file per step.');
+      setError('Envie apenas arquivos PDF.');
       return;
     }
 
     if (!currentDocument.allowMultiple && pdfFiles.length > 1) {
-      setError('Only one PDF file is allowed for this document type.');
+      setError('Apenas um PDF é permitido para este tipo de documento.');
       return;
     }
 
@@ -181,7 +181,7 @@ export function UploadScreen() {
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (!currentDocument) {
-      setError('All documents have already been classified.');
+      setError('Todos os documentos já foram classificados.');
       e.target.value = '';
       return;
     }
@@ -190,13 +190,13 @@ export function UploadScreen() {
 
     const pdfFiles = getPdfFiles(Array.from(e.target.files));
     if (pdfFiles.length === 0) {
-      setError('Upload only one PDF file per step.');
+      setError('Envie apenas arquivos PDF.');
       e.target.value = '';
       return;
     }
 
     if (!currentDocument.allowMultiple && pdfFiles.length > 1) {
-      setError('Only one PDF file is allowed for this document type.');
+      setError('Apenas um PDF é permitido para este tipo de documento.');
       e.target.value = '';
       return;
     }
@@ -252,7 +252,7 @@ export function UploadScreen() {
     setFinalSectionAlert(null);
 
     if (filesToUpload.length === 0) {
-      setFinalSectionAlert('At least one PDF is required for upload and analysis.');
+      setFinalSectionAlert('É necessário pelo menos um PDF para envio e análise.');
       return;
     }
 
@@ -298,7 +298,7 @@ export function UploadScreen() {
       setTimeout(() => navigate(`/dashboard/${processo.id}`), 400);
     } catch (err) {
       console.error('Upload failed:', err);
-      setError('Failed to upload documents. Check your connection and try again.');
+      setError('Falha ao enviar documentos. Verifique sua conexão e tente novamente.');
       setUploadProgress(null);
     }
   }
@@ -311,17 +311,17 @@ export function UploadScreen() {
         <div className="section-heading upload-screen__heading">
           <div className='upload-screen__title-row-parent'>
             <div className="upload-screen__title-row">
-              <h1 className="section-title-strong upload-screen__title">Evidence Hub</h1>
+              <h1 className="section-title-strong upload-screen__title">Central de Evidências</h1>
               <button
                 type="button"
                 className="ghost-button upload-screen__new-analysis-button"
                 onClick={handleStartNewAnalysis}
                 disabled={isLoading}
               >
-                Start New Analysis
+                Iniciar nova análise
               </button>
             </div>
-            <p className="section-text upload-screen__subtitle">Centralize and process legal documentation for automated compliance analysis.</p>
+            <p className="section-text upload-screen__subtitle">Centralize e processe a documentação jurídica para análise automatizada.</p>
           </div>
         </div>
 
@@ -333,10 +333,10 @@ export function UploadScreen() {
                   <div className="mini-icon upload-screen__pulse-icon"><Icon name="auto_awesome" /></div>
                   <div>
                     <h3 className="section-title-strong upload-screen__progress-title">
-                      {uploadProgress < 100 ? 'Processing Evidence…' : 'Done — opening Decision Lab'}
+                      {uploadProgress < 100 ? 'Processando evidências…' : 'Concluído — abrindo Mesa de Decisão'}
                     </h3>
                     <p className="section-text upload-screen__progress-subtitle">
-                      {uploadProgress < 60 ? 'Uploading documents…' : uploadProgress < 100 ? 'Triggering AI analysis…' : 'Redirecting…'}
+                      {uploadProgress < 60 ? 'Enviando documentos…' : uploadProgress < 100 ? 'Disparando análise de IA…' : 'Redirecionando…'}
                     </p>
                   </div>
                 </div>
@@ -355,9 +355,9 @@ export function UploadScreen() {
           onDrop={handleFileDrop}
         >
           <div className="section-heading">
-            <span className="section-title">Case Files and Evidence</span>
+            <span className="section-title">Autos e evidências</span>
             <span className="muted" style={{ fontSize: '0.82rem' }}>
-              {uploadedCount} uploaded • {selectedCount} uploaded (queued) • {missingCount} missing
+              {uploadedCount} enviados • {selectedCount} na fila • {missingCount} ausentes
             </span>
           </div>
           <div className="upload-zone upload-screen__drop-zone">
@@ -366,12 +366,12 @@ export function UploadScreen() {
                 <Icon name="upload_file" />
               </div>
               <h2 className="section-title-strong upload-screen__drop-title">
-                {currentDocument ? `Upload: ${currentDocument.expectedName}` : 'Sequence completed'}
+                {currentDocument ? `Enviar: ${currentDocument.expectedName}` : 'Sequência concluída'}
               </h2>
               <p className="section-text upload-screen__drop-copy">
                 {currentDocument
-                  ? `Step ${currentDocumentIndex + 1} of ${files.length}. This area accepts one PDF at a time.`
-                  : 'All required documents were classified. Review the list and submit for analysis.'}
+                  ? `Passo ${currentDocumentIndex + 1} de ${files.length}. Esta área aceita um PDF por vez.`
+                  : 'Todos os documentos obrigatórios foram classificados. Revise a lista e envie para análise.'}
               </p>
               {!currentDocument && finalSectionMessage && (
                 <p className="upload-screen__final-warning" role="alert">
@@ -394,7 +394,7 @@ export function UploadScreen() {
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isLoading || uploadProgress !== null}
                   >
-                    Select PDF
+                    Selecionar PDF
                   </button>
                   <button
                     className="ghost-button"
@@ -402,7 +402,7 @@ export function UploadScreen() {
                     onClick={skipCurrentDocument}
                     disabled={isLoading || uploadProgress !== null}
                   >
-                    Skip and mark missing
+                    Pular e marcar como ausente
                   </button>
                 </div>
               ) : (
@@ -413,7 +413,7 @@ export function UploadScreen() {
                     onClick={handleSubmit}
                     disabled={isLoading || uploadProgress !== null}
                   >
-                    {isLoading ? 'Sending...' : 'Upload and Analyze'}
+                    {isLoading ? 'Enviando…' : 'Enviar e analisar'}
                   </button>
                 ) : null
               )}
@@ -422,7 +422,7 @@ export function UploadScreen() {
         </section>
 
         <section className="panel panel-inner upload-screen__evidence-column">
-          <div className="section-heading"><span className="section-title">Processed</span></div>
+          <div className="section-heading"><span className="section-title">Processados</span></div>
           <div className="activity-list upload-screen__processed-list">
             {files.map((item) => (
               <div key={item.id} className="activity-item upload-screen__recent-item">
@@ -443,7 +443,7 @@ export function UploadScreen() {
                     type="button"
                     className="icon-button upload-screen__reset-button"
                     onClick={() => resetDocument(item.id)}
-                    aria-label={`Reset ${item.expectedName}`}
+                    aria-label={`Redefinir ${item.expectedName}`}
                     disabled={isLoading || uploadProgress !== null}
                   >
                     <Icon name="close" />

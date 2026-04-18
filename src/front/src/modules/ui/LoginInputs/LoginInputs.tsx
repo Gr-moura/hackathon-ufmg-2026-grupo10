@@ -17,11 +17,11 @@ export const LoginInputs = ({ inputType, placeholder, value, onChange }: LoginIn
         <div>
             <div className="login-screen__label-row">
 				<label className="field-label" htmlFor="identifier">
-					{inputType === "Login" ? "ID or Email Address" : "Password"}
+					{inputType === "Login" ? "E-mail ou ID" : "Senha"}
 				</label>
                 {inputType === "Password" && (
                     <a href="/" className="pill" onClick={(event) => event.preventDefault()}>
-                        Forgot?
+                        Esqueci a senha
                     </a>
                 )}
             </div>
@@ -40,7 +40,7 @@ export const LoginInputs = ({ inputType, placeholder, value, onChange }: LoginIn
                         value={value} onChange={(e) => onChange(e.target.value)}
                     />
                     <button 
-                        type="button" className="icon-button icon-suffix" aria-label="Toggle password visibility"
+                        type="button" className="icon-button icon-suffix" aria-label="Alternar visibilidade da senha"
                         onClick={() => setIsPasswordVisible((visible) => !visible)}
                     >
                         <Icon name={isPasswordVisible ? "visibility" : "visibility_off"} />

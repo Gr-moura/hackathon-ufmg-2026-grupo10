@@ -13,7 +13,7 @@ export const LoginRoleSelector = ({ onSelectRole, initialRole = 'Lawyer' }: Logi
 
     return (
         <div className="login-screen__role-block">
-            <div className="field-label">Identify Your Role</div>
+            <div className="field-label">Identifique seu perfil</div>
             <div className="tabs">
                 <button 
                     type="button" 
@@ -22,7 +22,7 @@ export const LoginRoleSelector = ({ onSelectRole, initialRole = 'Lawyer' }: Logi
                         onSelectRole('Lawyer');
                     }
                 }>
-                    Lawyer
+                    Advogado
                 </button>
                 <button 
                     type="button" 
@@ -32,7 +32,7 @@ export const LoginRoleSelector = ({ onSelectRole, initialRole = 'Lawyer' }: Logi
                         onSelectRole('Bank Administrator');
                     }
                 }>
-                    Bank Administrator
+                    Administrador do banco
                 </button>
             </div>
         </div>

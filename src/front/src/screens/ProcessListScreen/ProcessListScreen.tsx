@@ -4,10 +4,10 @@ import { Icon } from '../../modules/ui/Icon';
 import './ProcessListScreen.css';
 
 const STATUS_LABEL: Record<string, string> = {
-  pendente: 'Pending',
-  processando: 'Processing',
-  analisado: 'Analyzed',
-  concluido: 'Concluded',
+  pendente: 'Pendente',
+  processando: 'Processando',
+  analisado: 'Analisado',
+  concluido: 'Concluído',
 };
 
 const STATUS_TONE: Record<string, string> = {
@@ -39,7 +39,7 @@ export function ProcessListScreen() {
       <section className="panel panel-inner process-list-screen__header">
         <div className="section-heading">
           <div>
-            <h1 className="section-title-strong process-list-screen__title">Decision Lab</h1>
+            <h1 className="section-title-strong process-list-screen__title">Mesa de Decisão</h1>
             <p className="section-text process-list-screen__subtitle">
               Selecione um caso para ver ou executar a análise de IA.
             </p>
@@ -72,7 +72,7 @@ export function ProcessListScreen() {
               Faça upload de documentos para iniciar sua primeira análise.
             </p>
             <button className="primary-button" onClick={() => navigate('/upload')}>
-              <Icon name="upload_file" /> Ir para Evidence Hub
+              <Icon name="upload_file" /> Ir para Central de Evidências
             </button>
           </div>
         )}

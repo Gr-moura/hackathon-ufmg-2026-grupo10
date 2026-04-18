@@ -209,7 +209,7 @@ def _polish_rationale_llm(
     try:
         from openai import OpenAI
 
-        from app.core.config import get_settings
+        from app.config import get_settings
 
         settings = get_settings()
         if not settings.openai_api_key:

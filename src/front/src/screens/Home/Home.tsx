@@ -8,25 +8,25 @@ import './Home.css';
 const homeCapabilities = [
     {
         icon: 'folder_open',
-        title: 'Structured Case Intake',
-        description: 'Create workspaces with standardized metadata so every case begins with the same operational baseline.',
+        title: 'Abertura estruturada de casos',
+        description: 'Crie áreas de trabalho com metadados padronizados para que cada caso comece com a mesma base operacional.',
     },
     {
         icon: 'account_tree',
-        title: 'Decision Workflow Orchestration',
-        description: 'Coordinate handoffs between legal stages with clear checkpoints and transparent ownership.',
+        title: 'Orquestração do fluxo de decisão',
+        description: 'Coordene a passagem de etapa entre as fases jurídicas com checkpoints claros e responsabilidades transparentes.',
     },
     {
         icon: 'shield_lock',
-        title: 'Governance and Traceability',
-        description: 'Keep decisions, notes, and evidence paths auditable across the full lifecycle of the process.',
+        title: 'Governança e rastreabilidade',
+        description: 'Mantenha decisões, anotações e trilhas de evidência audítaveis durante todo o ciclo de vida do processo.',
     },
 ];
 
 const workflowSteps = [
-    'Define the objective and priority for the case.',
-    'Open the target module from the sidebar to continue the workflow.',
-    'Track outcomes and maintain process consistency through the platform.',
+    'Defina o objetivo e a prioridade do caso.',
+    'Abra o módulo desejado pela barra lateral para continuar o fluxo.',
+    'Acompanhe os resultados e mantenha a consistência do processo pela plataforma.',
 ];
 
 export function Home() {
@@ -40,25 +40,25 @@ export function Home() {
     const primaryAction =
         userRole === 'Bank Administrator'
             ? {
-                    label: 'Monitoring',
+                    label: 'Monitoramento',
                     path: '/monitoring',
                     icon: 'analytics',
-                    description: 'Open the monitoring center to follow operation-level indicators.',
+                    description: 'Abra a central de monitoramento para acompanhar os indicadores operacionais.',
                 }
             : {
-                    label: 'New Analysis',
+                    label: 'Nova análise',
                     path: '/upload',
                     icon: 'playlist_add',
-                    description: 'Start a new analysis flow and move the case through the platform.',
+                    description: 'Inicie um novo fluxo de análise e conduza o caso pela plataforma.',
                 };
 
     return (
         <main className="screen home-screen">
             <section className="panel panel-inner hero-banner home-screen__hero">
-                <div className="title-kicker">Welcome</div>
-                <h1 className="headline home-screen__headline">Legal Operations Workspace</h1>
+                <div className="title-kicker">Bem-vindo</div>
+                <h1 className="headline home-screen__headline">Área de Operações Jurídicas</h1>
                 <p className="lede home-screen__lede">
-                    A single environment to organize legal routines, keep teams aligned, and move each case through a clear operational journey.
+                    Um ambiente único para organizar as rotinas jurídicas, manter os times alinhados e conduzir cada caso por uma jornada operacional clara.
                 </p>
 
                 <div className="home-screen__action-row">
@@ -76,7 +76,7 @@ export function Home() {
                 <div className="hero-grid home-screen__grid">
                     <section className="panel panel-inner home-screen__capabilities">
                         <div className="section-heading">
-                            <h3 className="section-title">Platform Capabilities</h3>
+                            <h3 className="section-title">Capacidades da plataforma</h3>
                             <Icon name="widgets" />
                         </div>
 
@@ -99,7 +99,7 @@ export function Home() {
 
                     <aside className="panel panel-inner home-screen__flow">
                         <div className="section-heading">
-                            <h3 className="section-title">Daily Flow</h3>
+                            <h3 className="section-title">Fluxo diário</h3>
                             <Icon name="event_note" />
                         </div>
 
@@ -112,9 +112,9 @@ export function Home() {
                         </ol>
 
                         <div className="glass-card home-screen__support-card">
-                            <h4 className="section-title-strong home-screen__support-title">Navigation Tip</h4>
+                            <h4 className="section-title-strong home-screen__support-title">Dica de navegação</h4>
                             <p className="muted home-screen__support-copy">
-                                Use the sidebar at any time to switch modules. EnterOS keeps the operational context consistent as you move across screens.
+                                Use a barra lateral a qualquer momento para trocar de módulo. O EnterOS mantém o contexto operacional consistente entre as telas.
                             </p>
                         </div>
                     </aside>
